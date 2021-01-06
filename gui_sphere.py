@@ -260,3 +260,4 @@ app=QApplication(sys.argv)
 win=window()
 win.show()
 sys.exit(app.exec_())
+#check
