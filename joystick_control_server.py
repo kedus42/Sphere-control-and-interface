@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import time, serial, os, math
+import time, os, math
 import RPi.GPIO as GPIO
 from Adafruit_BNO055 import BNO055
 import paho.mqtt.client as mqttClient
@@ -18,9 +18,6 @@ PWM4=19
 
 bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
 bno.begin()
-
-ser=serial.Serial('/dev/ttyACM0', 9600, timeout=1)
-ser.flush()
 
 class sphere:
     loopl=156
@@ -50,6 +47,9 @@ class sphere:
         GPIO.setup(M4_CW, GPIO.OUT) 
         GPIO.setup(M4_CCW, GPIO.OUT) 
         GPIO.setup(PWM4, GPIO.OUT)
+        GPIO.setup(M12_CW, GPIO.OUT) 
+        GPIO.setup(M12_CCW, GPIO.OUT) 
+        GPIO.setup(PWM12, GPIO.OUT)
 
     def right_turn(self, k=1, d=sdist):
         GPIO.output(M3_CW, GPIO.HIGH)
@@ -182,7 +182,7 @@ class sphere:
                                         self.mpos+=1
                 i+=1
                 time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
-                
+
     def cc_motion_wt_loopl(self, command='w', facing_target=1, user_def_target=target):
         if facing_target:
                 target ,r, p = bno.read_euler()

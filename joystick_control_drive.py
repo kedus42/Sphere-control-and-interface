@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import time, serial, os, math
+import time, os, math
 import RPi.GPIO as GPIO
 import paho.mqtt.client as mqttClient
 
@@ -43,6 +43,9 @@ class sphere:
         GPIO.setup(M4_CW, GPIO.OUT) 
         GPIO.setup(M4_CCW, GPIO.OUT) 
         GPIO.setup(PWM4, GPIO.OUT)
+        GPIO.setup(M12_CW, GPIO.OUT) 
+        GPIO.setup(M12_CCW, GPIO.OUT) 
+        GPIO.setup(PWM12, GPIO.OUT)
 
     def right_turn(self, k=1, d=sdist):
         GPIO.output(M3_CW, GPIO.HIGH)
