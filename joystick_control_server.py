@@ -26,6 +26,7 @@ class sphere:
     sdist=40
     mpos=0
     limit=5
+    target=0
     def __init__(self):
         self.loopl=156
         self.mdelay=50
@@ -34,6 +35,7 @@ class sphere:
         self.sdist=40
         self.mpos=0
         self.limit=5
+        self.target=0
         
         GPIO.setmode(GPIO.BCM)   
         GPIO.setup(M3_CW, GPIO.OUT)
@@ -85,7 +87,7 @@ class sphere:
             time.sleep(1)
         self.mpos=0
 
-    def cc_motion(self, command='w', facing_target=1, user_def_target=0):
+    def cc_motion(self, command='w', facing_target=1, user_def_target=target):
         if facing_target:
                 target ,r, p = bno.read_euler()
         else:
@@ -146,7 +148,7 @@ class sphere:
             self.loopl=250
         command=str(self.loopl)
         ser.write(command.encode('utf-8'))
-        time.sleep(1.5)
+        time.sleep(1)
 
     def decrease_loopl(self):
         self.loopl-=5
@@ -154,7 +156,7 @@ class sphere:
             self.loopl=5
         command=str(self.loopl)
         ser.write(command.encode('utf-8'))
-        time.sleep(1.5)
+        time.sleep(1)
 
     def set_xy(self, x, y):
         yaw,r,p=bno.read_euler()
@@ -174,24 +176,34 @@ class sphere:
         time.sleep(1.5)
         self.cc_motion(command='w', facing_target=0, user_def_target=direction)
 
+    def increase_target(self):
+        self.target+=5
+        if self.target>=180:
+            self.target=-180
+        
+    def decrease_target(self):
+        self.target-=5
+        if self.target<=-180:
+            self.target=180
+
 Sphere=sphere()
 cc=True
 
 def callback(client, userdata, message):
-    global cc
+    global cc, target
     print(message.payload)
     if message.payload=="forward":
         if not cc:
             Sphere.send_to_arduino("w")
             Sphere.adjust_tilt()
         else:
-            Sphere.cc_motion(command="w")
+            Sphere.cc_motion(command="w", facing_target=0)
     elif message.payload=="backward":
         if not cc:
             Sphere.send_to_arduino("s")
             Sphere.adjust_tilt()
         else:
-            Sphere.cc_motion(command="s")
+            Sphere.cc_motion(command="s", facing_target=0)
     elif message.payload=="right":
         Sphere.right_turn()
     elif message.payload=="left":
@@ -202,6 +214,10 @@ def callback(client, userdata, message):
         Sphere.decrease_loopl()
     elif message.payload=="balance":
         Sphere.adjust_tilt()
+    elif message.payload=="angleup":
+        Sphere.increase_target()
+    elif message.payload=="angledown":
+        Sphere.decrease_target()
     elif message.payload=="togglecc":
         if cc == False:
             cc = True
