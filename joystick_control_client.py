@@ -55,23 +55,28 @@ while running:
             print(event.button)
             if event.button==4:
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"loopldown\"")
+                os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"loopldown\"")
                 loopl-=5
             elif event.button==5:
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"looplup\"")
+                os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"looplup\"")
                 loopl+=5
             elif event.button==8:
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"balance\"")
             elif event.button==0:
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"togglecc\"")
+                os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"togglecc\"")
                 if cc == "On":
                     cc = "Off"
                 else:
                     cc = "On"
             elif event.button==1:
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"angleup\"")
+                os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"angleup\"")
                 target+=5
             elif event.button==2:
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"angledown\"")
+                os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"angledown\"")
                 target-=5
 
     pygame.display.flip()
