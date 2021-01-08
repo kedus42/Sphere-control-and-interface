@@ -27,6 +27,8 @@ loopl_text = font.render('  loopl: '+str(loopl)+'  ', True, (0,0,0), (255,255,25
 looplRect = loopl_text.get_rect()
 looplRect.center = (80, 220)
 
+send_stop=False
+
 while running:
     #surface.fill((34,139,34))
     cc_text = font.render('  Course correction: '+str(cc)+'  ', True, (0,0,0), (255,255,255))
@@ -78,6 +80,37 @@ while running:
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"angledown\"")
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"angledown\"")
                 target-=5
+        elif event.type==pygame.JOYAXISMOTION:
+                #print(event)
+                if event.axis==1:
+                    if event.value<=-1:
+                        print("forward")
+                        os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"forward\"")
+                        send_stop=True
+                    elif event.value>=-0.001 and event.value<=0:
+                        if send_stop:
+                            print("stop")
+                            os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"stop\"")
+                            os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"stop\"")
+                            send_stop=False
+                    elif event.value>=1:
+                        print("backward")
+                        os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"backward\"")
+                        send_stop=True
+                    elif event.value>=-0.001 and event.value<=0:
+                        if send_stop:
+                            print("stop")
+                            os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"stop\"")
+                            os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"stop\"")
+                            send_stop=False
+                elif event.axis==3:
+                    if event.value<=-1:
+                        print("left")
+                        os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"left\"")
+                    elif event.value>=1:
+                        print("right")
+                        os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"right\"")
+                
 
     pygame.display.flip()
     clock.tick(20)

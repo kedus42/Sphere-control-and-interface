@@ -3,9 +3,9 @@ import time, os, math
 import RPi.GPIO as GPIO
 import paho.mqtt.client as mqttClient
 
-M12_CW=2
-M12_CCW=3
-PMW12=4
+M12_CW=21
+M12_CCW=20
+PWM12=16
 
 M3_CW=17
 M3_CCW=27
@@ -14,6 +14,8 @@ PWM3=13
 M4_CW=22
 M4_CCW=23
 PWM4=19
+
+GPIO.setwarnings(False)
 
 class sphere:
     loopl=156
@@ -94,41 +96,39 @@ class sphere:
         if command=="forward":
             while self.move:
                 GPIO.output(M12_CW, GPIO.HIGH)
-                GPIO.outpu(M12_CCW, LOW)
-                GPIO.output(PWM12, HIGH)
+                GPIO.output(M12_CCW, GPIO.LOW)
+                GPIO.output(PWM12, 150)
                 time.sleep(float(self.mdelay/float(1000)))
-                GPIO.output(M12_CW, LOW)
-                GPIO.output(M12_CCW, LOW)
-                GPIO.output(PWM12, LOW)
+                GPIO.output(M12_CW, GPIO.LOW)
+                GPIO.output(M12_CCW, GPIO.LOW)
+                GPIO.output(PWM12, GPIO.LOW)
                 time.sleep(float(self.mdelay/float(1000)))
             
             time.sleep(2*float(self.mdelay/float(1000)))
-            GPIO.output(M12_CW, HIGH)
-            GPIO.output(PWM12, HIGH)
+            GPIO.output(M12_CW, GPIO.HIGH)
+            GPIO.output(PWM12, 150)
             time.sleep(float(self.mdelay/float(1000)))
-            GPIO.output(M12_CW, LOW)
-            GPIO.output(M12_CCW, LOW)
-            GPIO.output(PWM12, LOW)
-            self.adjust_tilt()
+            GPIO.output(M12_CW, GPIO.LOW)
+            GPIO.output(M12_CCW, GPIO.LOW)
+            GPIO.output(PWM12, GPIO.LOW)
         else:
             while self.move:
                 GPIO.output(M12_CCW, GPIO.HIGH)
-                GPIO.outpu(M12_CW, LOW)
-                GPIO.output(PWM12, HIGH)
+                GPIO.output(M12_CW, GPIO.LOW)
+                GPIO.output(PWM12, 150)
                 time.sleep(float(self.mdelay/float(1000)))
-                GPIO.output(M12_CW, LOW)
-                GPIO.output(M12_CCW, LOW)
-                GPIO.output(PWM12, LOW)
+                GPIO.output(M12_CW, GPIO.LOW)
+                GPIO.output(M12_CCW, GPIO.LOW)
+                GPIO.output(PWM12, GPIO.LOW)
                 time.sleep(float(self.mdelay/float(1000)))
             
             time.sleep(2*float(self.mdelay/float(1000)))
-            GPIO.output(M12_CCW, HIGH)
-            GPIO.output(PWM12, HIGH)
+            GPIO.output(M12_CCW, GPIO.HIGH)
+            GPIO.output(PWM12, 150)
             time.sleep(float(self.mdelay/float(1000)))
-            GPIO.output(M12_CW, LOW)
-            GPIO.output(M12_CCW, LOW)
-            GPIO.output(PWM12, LOW)
-            self.adjust_tilt()
+            GPIO.output(M12_CW, GPIO.LOW)
+            GPIO.output(M12_CCW, GPIO.LOW)
+            GPIO.output(PWM12, GPIO.LOW)
 
     def stop(self):
         self.move=False
@@ -227,7 +227,10 @@ class sphere:
                 time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
     
     def print_to_drive(self, command):
-        os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \""+command+"\"")
+        if command == "forward":
+            os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"forward\"")
+        elif command == "backward":
+            os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"backward\"")
     
     def set_loopl(self, loopl):
         self.loopl=loopl
@@ -269,6 +272,7 @@ cc=True
 move="stop"
 
 def callback(client, userdata, message):
+    global cc, move
     if message.payload=="forward":
         move="forward"
     elif message.payload=="backward":
@@ -291,7 +295,7 @@ def callback(client, userdata, message):
             cc=False
 
 broker_address= "192.168.43.139"
-client = mqttClient.Client("Python") 
+client = mqttClient.Client("Drive") 
 client.on_message= callback
 client.connect(broker_address) 
 client.loop_start()  
