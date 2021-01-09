@@ -178,6 +178,7 @@ class sphere:
                                         self.mpos+=1
                 i+=1
                 time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
+        self.adjust_tilt()
 
     def cc_motion_wt_loopl(self, command='w', facing_target=1, user_def_target=target):
         if facing_target:
@@ -225,6 +226,7 @@ class sphere:
                                         self.mpos+=1
                 i+=1
                 time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
+        self.adjust_tilt()
     
     def print_to_drive(self, command):
         if command == "forward":

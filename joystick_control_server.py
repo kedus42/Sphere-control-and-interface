@@ -147,6 +147,7 @@ class sphere:
         else:
             self.print_to_drive("backward")
         i=0
+        self.move=True
         while (i<self.loopl):
                 y,r,p=bno.read_euler()
                 if y < 180:
@@ -182,6 +183,9 @@ class sphere:
                                         self.mpos+=1
                 i+=1
                 time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
+        os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"stop\"")
+        os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"stop\"")
+        self.adjust_tilt()
 
     def cc_motion_wt_loopl(self, command='w', facing_target=1, user_def_target=target):
         if facing_target:
@@ -229,6 +233,7 @@ class sphere:
                                         self.mpos+=1
                 i+=1
                 time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
+        self.adjust_tilt()
     
     def print_to_drive(self, command):
         if command == "forward":
@@ -312,13 +317,50 @@ def callback(client, userdata, message):
         Sphere.stop()
         move="stop"
 
+def gui_callback(client, userdata, message):
+    if chr(message.payload[0])=='x' and chr(message.payload[1])=='y':
+        xy=[]
+        num=""
+        for char in message.payload[3:]:
+            num+=str(chr(char))
+            if chr(char) ==' ':
+                xy.append(int(num))
+                num=""
+        Sphere.set_xy(xy[0], xy[1])
+
+    elif chr(message.payload[0])=='d' and chr(message.payload[1])=='d':
+        dd=[]
+        num=""
+        for char in message.payload[3:]:
+            num+=str(chr(char))
+            if chr(char) ==' ':
+                dd.append(int(num))
+                num=""
+        Sphere.set_direction_dist(dd[0], dd[1])
+    elif chr(message.payload[0])=='d' and chr(message.payload[1])=='i':
+        di=[]
+        num=""
+        for char in message.payload[3:]:
+            num+=str(chr(char))
+            if chr(char) ==' ':
+                di.append(int(num))
+                num=""
+        Sphere.set_direction_dist(dd[0], di[0])
+
 broker_address= "192.168.43.139"
 client = mqttClient.Client("Server") 
 client.on_message= callback
 client.connect(broker_address) 
 client.loop_start()  
 client.subscribe("test")
-print("Server up")
+print("Base server up")
+
+client2 = mqttClient.Client("Gui server") 
+client2.on_message= gui_callback
+client2.connect(broker_address) 
+client2.loop_start()  
+client2.subscribe("gui")
+print("Gui server up")
 
 while True:
     if move=="forward":
