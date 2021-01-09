@@ -143,6 +143,7 @@ class sphere:
         else:
             self.print_to_drive("backward")
         i=0
+        self.move=True
         while (i<self.loopl):
                 y,r,p=bno.read_euler()
                 if y < 180:
@@ -178,6 +179,8 @@ class sphere:
                                         self.mpos+=1
                 i+=1
                 time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
+        os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"stop\"")
+        os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"stop\"")
         self.adjust_tilt()
 
     def cc_motion_wt_loopl(self, command='w', facing_target=1, user_def_target=target):

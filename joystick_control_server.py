@@ -4,9 +4,9 @@ import RPi.GPIO as GPIO
 from Adafruit_BNO055 import BNO055
 import paho.mqtt.client as mqttClient
 
-M12_CW=2
-M12_CCW=3
-PWM12=4
+M12_CW=21
+M12_CCW=20
+PWM12=16
 
 M3_CW=17
 M3_CCW=27
@@ -100,7 +100,7 @@ class sphere:
         if command=="forward":
             while self.move:
                 GPIO.output(M12_CW, GPIO.HIGH)
-                GPIO.outpu(M12_CCW, GPIO.LOW)
+                GPIO.output(M12_CCW, GPIO.LOW)
                 GPIO.output(PWM12, 150)
                 time.sleep(float(self.mdelay/float(1000)))
                 GPIO.output(M12_CW, GPIO.LOW)
@@ -118,7 +118,7 @@ class sphere:
         else:
             while self.move:
                 GPIO.output(M12_CCW, GPIO.HIGH)
-                GPIO.outpu(M12_CW, GPIO.LOW)
+                GPIO.output(M12_CW, GPIO.LOW)
                 GPIO.output(PWM12, 150)
                 time.sleep(float(self.mdelay/float(1000)))
                 GPIO.output(M12_CW, GPIO.LOW)
@@ -241,7 +241,6 @@ class sphere:
         elif command == "backward":
             os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"backward\"")          
 
-    
     def set_loopl(self, loopl):
         self.loopl=loopl
     
