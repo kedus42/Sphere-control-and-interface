@@ -5,7 +5,7 @@ import paho.mqtt.client as mqttClient
 
 M12_CW=21
 M12_CCW=20
-PWM12=16
+PWM12=12
 
 M3_CW=17
 M3_CCW=27
@@ -16,6 +16,8 @@ M4_CCW=23
 PWM4=19
 
 GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(PWM12, GPIO.OUT)
 
 class sphere:
     loopl=156
@@ -27,9 +29,12 @@ class sphere:
     limit=5
     target=0
     move=False
+    pwm_pin=GPIO.PWM(PWM12,1000)
+    duty_cycle=75
+
     def __init__(self):
         self.loopl=156
-        self.mdelay=50
+        self.mdelay=75
         self.o_range=5
         self.bdist=25
         self.sdist=40
@@ -37,8 +42,9 @@ class sphere:
         self.limit=5
         self.target=0
         self.move=False
-        
-        GPIO.setmode(GPIO.BCM)   
+        self.pwm_pin.start(0)
+        self.duty_cycle=75
+         
         GPIO.setup(M3_CW, GPIO.OUT)
         GPIO.setup(M3_CCW, GPIO.OUT) 
         GPIO.setup(PWM3, GPIO.OUT) 
@@ -47,7 +53,6 @@ class sphere:
         GPIO.setup(PWM4, GPIO.OUT)
         GPIO.setup(M12_CW, GPIO.OUT) 
         GPIO.setup(M12_CCW, GPIO.OUT) 
-        GPIO.setup(PWM12, GPIO.OUT)
 
     def right_turn(self, k=1, d=sdist):
         GPIO.output(M3_CW, GPIO.HIGH)
@@ -97,38 +102,38 @@ class sphere:
             while self.move:
                 GPIO.output(M12_CW, GPIO.HIGH)
                 GPIO.output(M12_CCW, GPIO.LOW)
-                GPIO.output(PWM12, 150)
-                time.sleep(float(self.mdelay/float(1000)))
+                self.pwm_pin.ChangeDutyCycle(self.duty_cycle)
+                time.sleep(float(float(self.mdelay)/float(1000)))
                 GPIO.output(M12_CW, GPIO.LOW)
                 GPIO.output(M12_CCW, GPIO.LOW)
-                GPIO.output(PWM12, GPIO.LOW)
-                time.sleep(float(self.mdelay/float(1000)))
+                self.pwm_pin.ChangeDutyCycle(0)
+                time.sleep(float(float(self.mdelay)/float(1000)))
             
-            time.sleep(2*float(self.mdelay/float(1000)))
+            time.sleep(2*float(float(self.mdelay)/float(1000)))
             GPIO.output(M12_CW, GPIO.HIGH)
-            GPIO.output(PWM12, 150)
-            time.sleep(float(self.mdelay/float(1000)))
+            self.pwm_pin.ChangeDutyCycle(self.duty_cycle)
+            time.sleep(float(float(self.mdelay)/float(1000)))
             GPIO.output(M12_CW, GPIO.LOW)
             GPIO.output(M12_CCW, GPIO.LOW)
-            GPIO.output(PWM12, GPIO.LOW)
+            self.pwm_pin.ChangeDutyCycle(0)
         else:
             while self.move:
                 GPIO.output(M12_CCW, GPIO.HIGH)
                 GPIO.output(M12_CW, GPIO.LOW)
-                GPIO.output(PWM12, 150)
-                time.sleep(float(self.mdelay/float(1000)))
+                self.pwm_pin.ChangeDutyCycle(self.duty_cycle)
+                time.sleep(float(float(self.mdelay)/float(1000)))
                 GPIO.output(M12_CW, GPIO.LOW)
                 GPIO.output(M12_CCW, GPIO.LOW)
-                GPIO.output(PWM12, GPIO.LOW)
-                time.sleep(float(self.mdelay/float(1000)))
+                self.pwm_pin.ChangeDutyCycle(0)
+                time.sleep(float(float(self.mdelay)/float(1000)))
             
-            time.sleep(2*float(self.mdelay/float(1000)))
+            time.sleep(2*float(float(self.mdelay)/float(1000)))
             GPIO.output(M12_CCW, GPIO.HIGH)
-            GPIO.output(PWM12, 150)
-            time.sleep(float(self.mdelay/float(1000)))
+            self.pwm_pin.ChangeDutyCycle(self.duty_cycle)
+            time.sleep(float(float(self.mdelay)/float(1000)))
             GPIO.output(M12_CW, GPIO.LOW)
             GPIO.output(M12_CCW, GPIO.LOW)
-            GPIO.output(PWM12, GPIO.LOW)
+            self.pwm_pin.ChangeDutyCycle(0)
 
     def stop(self):
         self.move=False

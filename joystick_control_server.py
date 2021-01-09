@@ -31,9 +31,10 @@ class sphere:
     limit=5
     target=0
     move=False
+    duty_cycle=75
     def __init__(self):
         self.loopl=156
-        self.mdelay=50
+        self.mdelay=75
         self.o_range=5
         self.bdist=25
         self.sdist=40
@@ -41,6 +42,7 @@ class sphere:
         self.limit=5
         self.target=0
         self.move=False
+        self.duty_cycle=75
         
         GPIO.setmode(GPIO.BCM)   
         GPIO.setup(M3_CW, GPIO.OUT)
@@ -101,17 +103,17 @@ class sphere:
             while self.move:
                 GPIO.output(M12_CW, GPIO.HIGH)
                 GPIO.output(M12_CCW, GPIO.LOW)
-                GPIO.output(PWM12, 150)
-                time.sleep(float(self.mdelay/float(1000)))
+                GPIO.output(PWM12, self.duty_cycle)
+                time.sleep(float(float(self.mdelay)/float(1000)))
                 GPIO.output(M12_CW, GPIO.LOW)
                 GPIO.output(M12_CCW, GPIO.LOW)
                 GPIO.output(PWM12, GPIO.LOW)
-                time.sleep(float(self.mdelay/float(1000)))
+                time.sleep(float(float(self.mdelay)/float(1000)))
             
-            time.sleep(2*float(self.mdelay/float(1000)))
+            time.sleep(2*float(float(self.mdelay)/float(1000)))
             GPIO.output(M12_CW, GPIO.HIGH)
-            GPIO.output(PWM12, 150)
-            time.sleep(float(self.mdelay/float(1000)))
+            GPIO.output(PWM12, self.duty_cycle)
+            time.sleep(float(float(self.mdelay)/float(1000)))
             GPIO.output(M12_CW, GPIO.LOW)
             GPIO.output(M12_CCW, GPIO.LOW)
             GPIO.output(PWM12, GPIO.LOW)
@@ -119,17 +121,17 @@ class sphere:
             while self.move:
                 GPIO.output(M12_CCW, GPIO.HIGH)
                 GPIO.output(M12_CW, GPIO.LOW)
-                GPIO.output(PWM12, 150)
-                time.sleep(float(self.mdelay/float(1000)))
+                GPIO.output(PWM12, self.duty_cycle)
+                time.sleep(float(float(self.mdelay)/float(1000)))
                 GPIO.output(M12_CW, GPIO.LOW)
                 GPIO.output(M12_CCW, GPIO.LOW)
                 GPIO.output(PWM12, GPIO.LOW)
-                time.sleep(float(self.mdelay/float(1000)))
+                time.sleep(float(float(self.mdelay)/float(1000)))
             
-            time.sleep(2*float(self.mdelay/float(1000)))
+            time.sleep(2*float(float(self.mdelay)/float(1000)))
             GPIO.output(M12_CCW, GPIO.HIGH)
-            GPIO.output(PWM12, 150)
-            time.sleep(float(self.mdelay/float(1000)))
+            GPIO.output(PWM12, self.duty_cycle)
+            time.sleep(float(float(self.mdelay)/float(1000)))
             GPIO.output(M12_CW, GPIO.LOW)
             GPIO.output(M12_CCW, GPIO.LOW)
             GPIO.output(PWM12, GPIO.LOW)
@@ -317,34 +319,34 @@ def callback(client, userdata, message):
         move="stop"
 
 def gui_callback(client, userdata, message):
-    if chr(message.payload[0])=='x' and chr(message.payload[1])=='y':
+    if message.payload[0]=='x' and message.payload[1]=='y':
         xy=[]
         num=""
         for char in message.payload[3:]:
-            num+=str(chr(char))
-            if chr(char) ==' ':
+            num+=str(char)
+            if char ==' ':
                 xy.append(int(num))
                 num=""
         Sphere.set_xy(xy[0], xy[1])
 
-    elif chr(message.payload[0])=='d' and chr(message.payload[1])=='d':
+    elif message.payload[0]=='d' and message.payload[1]=='d':
         dd=[]
         num=""
         for char in message.payload[3:]:
-            num+=str(chr(char))
-            if chr(char) ==' ':
+            num+=str(char)
+            if char ==' ':
                 dd.append(int(num))
                 num=""
         Sphere.set_direction_dist(dd[0], dd[1])
-    elif chr(message.payload[0])=='d' and chr(message.payload[1])=='i':
+    elif message.payload[0]=='d' and message.payload[1]=='i':
         di=[]
         num=""
         for char in message.payload[3:]:
-            num+=str(chr(char))
-            if chr(char) ==' ':
+            num+=str(char)
+            if char ==' ':
                 di.append(int(num))
                 num=""
-        Sphere.set_direction_dist(dd[0], di[0])
+        Sphere.set_direction_dist(0, di[0])
 
 broker_address= "192.168.43.139"
 client = mqttClient.Client("Server") 
