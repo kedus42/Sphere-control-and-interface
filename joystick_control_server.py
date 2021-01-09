@@ -278,13 +278,32 @@ class sphere:
         if self.target<=-180:
             self.target=180
 
+    def increase_dc(self):
+        self.duty_cycle+=5
+        if self.duty_cycle>=100:
+            self.duty_cycle=100
+    
+    def decrease_dc(self):
+        self.duty_cycle-=5
+        if self.duty_cycle<=0:
+            self.duty_cycle=0
+    
+    def increase_mdelay(self):
+        self.mdelay+=5
+        if self.mdelay>=200:
+            self.mdelay=200
+    
+    def decrease_mdelay(self):
+        self.mdelay-=5
+        if self.mdelay<=0:
+            self.mdelay=0
+
 Sphere=sphere()
 cc=True
 move="Stop"
 
 def callback(client, userdata, message):
     global cc, target, move
-    #print(message.payload)
     if message.payload=="forward":
         if not cc:
             Sphere.print_to_drive("forward")
@@ -299,10 +318,6 @@ def callback(client, userdata, message):
         Sphere.right_turn()
     elif message.payload=="left":
         Sphere.left_turn()
-    elif message.payload=="looplup":
-        Sphere.increase_loopl()
-    elif message.payload=="loopldown":
-        Sphere.decrease_loopl()
     elif message.payload=="balance":
         Sphere.adjust_tilt()
     elif message.payload=="angleup":
@@ -317,6 +332,14 @@ def callback(client, userdata, message):
     elif message.payload=="stop":
         Sphere.stop()
         move="stop"
+    elif message.payload=="pwmup":
+        Sphere.increase_dc()
+    elif message.payload=="pwmdown":
+        Sphere.decrease_dc()
+    elif message.payload=="mdelayup":
+        Sphere.increase_mdelay()
+    elif message.payload=="mdelaydown":
+        Sphere.decrease_mdelay()
 
 def gui_callback(client, userdata, message):
     if message.payload[0]=='x' and message.payload[1]=='y':

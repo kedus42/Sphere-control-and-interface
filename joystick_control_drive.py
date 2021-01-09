@@ -277,6 +277,26 @@ class sphere:
         if self.target<=-180:
             self.target=180
 
+    def increase_dc(self):
+        self.duty_cycle+=5
+        if self.duty_cycle>=100:
+            self.duty_cycle=100
+    
+    def decrease_dc(self):
+        self.duty_cycle-=5
+        if self.duty_cycle<=0:
+            self.duty_cycle=0
+    
+    def increase_mdelay(self):
+        self.mdelay+=5
+        if self.mdelay>=200:
+            self.mdelay=200
+    
+    def decrease_mdelay(self):
+        self.mdelay-=5
+        if self.mdelay<=0:
+            self.mdelay=0
+
 Sphere=sphere()
 cc=True
 move="stop"
@@ -290,10 +310,6 @@ def callback(client, userdata, message):
     elif message.payload=="stop":
         Sphere.stop()
         move="stop"
-    elif message.payload=="looplup":
-        Sphere.increase_loopl()
-    elif message.payload=="loopldown":
-        Sphere.decrease_loopl()
     elif message.payload=="angleup":
         Sphere.increase_target()
     elif message.payload=="angledown":
@@ -303,6 +319,14 @@ def callback(client, userdata, message):
             cc = True
         else:
             cc=False
+    elif message.payload=="pwmup":
+        Sphere.increase_dc()
+    elif message.payload=="pwmdown":
+        Sphere.decrease_dc()
+    elif message.payload=="mdelayup":
+        Sphere.increase_mdelay()
+    elif message.payload=="mdelaydown":
+        Sphere.decrease_mdelay()
 
 broker_address= "192.168.43.139"
 client = mqttClient.Client("Drive") 
