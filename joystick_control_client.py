@@ -96,7 +96,7 @@ while running:
     dc_text = font.render('  Duty cycle: '+str(Sphere.duty_cycle)+'  ', True, (0,0,0), (255,255,255))
     
     surface.fill((0,0,0))
-    surface.blit(loopl_text, mdelayRect)
+    surface.blit(mdelay_text, mdelayRect)
     surface.blit(target_text, targetRect)
     surface.blit(cc_text, ccRect)
     surface.blit(dc_text, dcRect)
