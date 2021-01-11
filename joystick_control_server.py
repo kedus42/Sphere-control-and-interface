@@ -260,13 +260,11 @@ class sphere:
             self.loopl=5
 
     def set_xy(self, x, y):
-        yaw,r,p=bno.read_euler()
         direction = 90-math.degrees(math.atan2(x,y))
         self.loopl = math.floor(math.sqrt(x**2+y**2))
         self.cc_motion(command='w', facing_target=0, user_def_target=direction)
     
     def set_direction_dist(self, direction, dist):
-        yaw ,r, p = bno.read_euler()
         self.loopl=dist
         self.cc_motion(command='w', facing_target=0, user_def_target=direction)
 
