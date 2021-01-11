@@ -132,12 +132,13 @@ while running:
             elif event.button==8:
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"balance\"")
             elif event.button==0:
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"togglecc\"")
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"togglecc\"")
-                if cc == "On":
-                    cc = "Off"
-                else:
-                    cc = "On"
+                os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"ccon\"")
+                os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"ccon\"")
+                cc="On"
+            elif even.button==:
+                os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"ccoff\"")
+                os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"ccoff\"")
+                cc="Off"
             elif event.button==1:
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"angleup\"")
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"angleup\"")

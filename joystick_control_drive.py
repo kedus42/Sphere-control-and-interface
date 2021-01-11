@@ -314,11 +314,10 @@ def callback(client, userdata, message):
         Sphere.increase_target()
     elif message.payload=="angledown":
         Sphere.decrease_target()
-    elif message.payload=="togglecc":
-        if cc == False:
-            cc = True
-        else:
-            cc=False
+    elif message.payload=="ccon":
+        cc=True
+    elif message.payload=="ccoff":
+        cc=False
     elif message.payload=="pwmup":
         Sphere.increase_dc()
     elif message.payload=="pwmdown":
