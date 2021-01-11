@@ -121,29 +121,29 @@ while running:
         #            os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"left\"")
         elif event.type == pygame.JOYBUTTONDOWN:
             print(event.button)
-            if event.button==4:
+            if event.button==2:#X
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"mdelaydown\"")
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"mdelaydown\"")
                 Sphere.decrease_mdelay()
-            elif event.button==5:
+            elif event.button==1:#B
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"mdelayup\"")
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"mdelayup\"")
                 Sphere.increase_mdelay()
-            elif event.button==8:
+            elif event.button==8:#Start
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"balance\"")
-            elif event.button==0:
+            elif event.button==3:#Y
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"ccon\"")
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"ccon\"")
                 cc="On"
-            elif even.button==:
+            elif event.button==0:#A
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"ccoff\"")
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"ccoff\"")
                 cc="Off"
-            elif event.button==1:
+            elif event.button==5:#RB
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"angleup\"")
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"angleup\"")
                 Sphere.increase_target()
-            elif event.button==2:
+            elif event.button==4:#LB
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"angledown\"")
                 os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"angledown\"")
                 Sphere.decrease_target()

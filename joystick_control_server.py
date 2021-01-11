@@ -32,6 +32,7 @@ class sphere:
     target=0
     move=False
     duty_cycle=75
+
     def __init__(self):
         self.loopl=156
         self.mdelay=75
@@ -143,7 +144,8 @@ class sphere:
         if facing_target:
                 target ,r, p = bno.read_euler()
         else:
-                target = user_def_target
+                y ,r, p = bno.read_euler()
+                target = user_def_target+y
         if command=='w':
             self.print_to_drive("forward")
         else:
@@ -162,7 +164,7 @@ class sphere:
                                 error = y-target
                         else:     
                                 error = -1*(target + (360-y))
-                print(target, y, error)
+                print(self.target, target, y, error)
                 if error <= -5:
                         if command == 'w':
                                 if self.mpos<self.limit:
@@ -193,7 +195,8 @@ class sphere:
         if facing_target:
                 target ,r, p = bno.read_euler()
         else:
-                target = user_def_target
+                y ,r, p = bno.read_euler()
+                target = user_def_target+y
         if command=='w':
             self.print_to_drive("forward")
         else:
@@ -212,7 +215,7 @@ class sphere:
                                 error = y-target
                         else:     
                                 error = -1*(target + (360-y))
-                print(target, y, error)
+                print(self.target, target, y, error)
                 if error <= -5:
                         if command == 'w':
                                 if self.mpos<self.limit:
@@ -258,13 +261,12 @@ class sphere:
 
     def set_xy(self, x, y):
         yaw,r,p=bno.read_euler()
-        direction = yaw+90-math.degrees(math.atan2(x,y))
+        direction = 90-math.degrees(math.atan2(x,y))
         self.loopl = math.floor(math.sqrt(x**2+y**2))
         self.cc_motion(command='w', facing_target=0, user_def_target=direction)
     
     def set_direction_dist(self, direction, dist):
         yaw ,r, p = bno.read_euler()
-        direction=direction+yaw
         self.loopl=dist
         self.cc_motion(command='w', facing_target=0, user_def_target=direction)
 
@@ -387,8 +389,8 @@ print("Gui server up")
 
 while True:
     if move=="forward":
-        Sphere.cc_motion_wt_loopl(command="w")
+        Sphere.cc_motion_wt_loopl(command="w", facing_target=0, user_def_target=Sphere.target)
     elif move=="backward":
-        Sphere.cc_motion_wt_loopl(command="s")
+        Sphere.cc_motion_wt_loopl(command="s", facing_target=0, user_def_target=Sphere.target)
     else:
         pass
