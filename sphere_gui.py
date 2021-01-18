@@ -26,8 +26,8 @@ class window(QMainWindow):
 
     def b8_clicked(self):
         self.xy=QInputDialog(self)
-        self.x, xpressed=self.xy.getInt(self,"Set x target", "", 0, 0, 250, 1)
-        self.y, ypressed=self.xy.getInt(self,"Set y target", "", 0, 0, 250, 1)
+        self.x, xpressed=self.xy.getInt(self,"Set x target", "", 0, -250, 250, 1)
+        self.y, ypressed=self.xy.getInt(self,"Set y target", "", 0, -250, 250, 1)
         os.system("mosquitto_pub -h 192.168.43.139 -t \"gui\" -m \"xy"+" "+str(self.x)+" "+str(self.y)+" \"")
 
     
