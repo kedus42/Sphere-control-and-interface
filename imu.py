@@ -8,7 +8,6 @@ ypos=0
 zpos=0
 calibration_values=[244, 255, 15, 0, 238, 255, 213, 0, 168, 254, 161, 252, 0, 0, 253, 255, 0, 0, 232, 3, 114, 3]
 bno.set_calibration(calibration_values)
-i=0
 pxacc=pyacc=pzacc=pxvel=pyvel=pzvel=0
 while True:
     start=time.time()

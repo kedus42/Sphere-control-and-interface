@@ -85,6 +85,7 @@ class sphere:
         GPIO.output(PWM3, GPIO.LOW)
 
     def adjust_tilt(self, target=0):
+        print("Adjusting tilt...")
         i=0
         while (i<10):
             y,r,p=bno.read_euler()
@@ -95,6 +96,7 @@ class sphere:
             i+=1
             time.sleep(1)
         self.mpos=0
+        print("Finished.")
 
     def base_motion(self, command="forward"):
         self.move=True
@@ -144,6 +146,7 @@ class sphere:
         else:
                 y ,r, p = bno.read_euler()
                 target = user_def_target+y
+                target%=360
         if command=='w':
             self.print_to_drive("forward")
         else:
@@ -260,6 +263,8 @@ class sphere:
     def set_xy(self, x, y):
         direction = 90-math.degrees(math.atan2(x,y))
         self.loopl = math.floor(math.sqrt(x**2+y**2))
+        if direction<0:
+            direction+=360
         self.cc_motion(command='w', facing_target=0, user_def_target=direction)
     
     def set_direction_dist(self, direction, dist):
