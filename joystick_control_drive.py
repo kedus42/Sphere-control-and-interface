@@ -31,6 +31,8 @@ class sphere:
     move=False
     pwm_pin=GPIO.PWM(PWM12,1000)
     duty_cycle=75
+    mtl=20
+    k=.5
 
     def __init__(self):
         self.loopl=156
@@ -44,7 +46,9 @@ class sphere:
         self.move=False
         self.pwm_pin.start(0)
         self.duty_cycle=75
-         
+        self.mtl=20
+        self.k=.5
+
         GPIO.setup(M3_CW, GPIO.OUT)
         GPIO.setup(M3_CCW, GPIO.OUT) 
         GPIO.setup(PWM3, GPIO.OUT) 
@@ -153,6 +157,7 @@ class sphere:
             self.print_to_drive("backward")
         i=0
         self.move=True
+        self.loopl=convert_to_loopl(self.loopl)
         while (i<self.loopl):
                 y,r,p=bno.read_euler()
                 if y < 180:
@@ -300,6 +305,9 @@ class sphere:
         self.mdelay-=5
         if self.mdelay<=0:
             self.mdelay=0
+    def convert_to_loopl(self, meter):
+        loopl=int(meter*self.mtl/self.k*self.duty_cycle)
+        return loopl
 
 Sphere=sphere()
 cc=True
