@@ -1,5 +1,6 @@
 from Adafruit_BNO055 import BNO055
 import time
+from statistics import mean
 
 bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
 bno.begin()
@@ -9,6 +10,8 @@ zpos=0
 calibration_values=[244, 255, 15, 0, 238, 255, 213, 0, 168, 254, 161, 252, 0, 0, 253, 255, 0, 0, 232, 3, 114, 3]
 bno.set_calibration(calibration_values)
 pxacc=pyacc=pzacc=pxvel=pyvel=pzvel=0
+xacclist=yacclist=zlist=[]
+dt=.001
 while True:
     start=time.time()
     sys, gyro, acc, mag = bno.get_calibration_status()
@@ -27,13 +30,14 @@ while True:
         yacc=0
     if zacc<0.2 and zacc>-0.2:
         zacc=0
-    xvel=pxvel+(pxacc+xacc)*.5*.001
-    yvel=pyvel+(pyacc+yacc)*.5*.001
-    zvel=pzvel+(pzacc+zacc)*.5*.001
-    xpos+=(pxvel+xvel)*.5*.001
-    ypos+=(pyvel+yvel)*.5*.001
-    zpos+=(pzvel+pzacc)*.5*.001
+    xvel=pxvel+(pxacc+xacc)*.5*dt
+    yvel=pyvel+(pyacc+yacc)*.5*dt
+    zvel=pzvel+(pzacc+zacc)*.5*dt
+    xpos+=(pxvel+xvel)*.5*dt
+    ypos+=(pyvel+yvel)*.5*dt
+    zpos+=(pzvel+pzacc)*.5*dt
     print("rpy:", roll, pitch, yaw)
+    print("xyz velocity:", xvel, yvel, zvel)
     print("xyz position:", xpos, ypos, zpos)
     pxacc=xacc
     pyacc=yacc
@@ -42,6 +46,6 @@ while True:
     pyvel=yvel
     pzvel=zvel
     end=time.time()
-    remaining=.001-(end-start)
+    remaining=dt-(end-start)
     if remaining>0:
         time.sleep(remaining)
