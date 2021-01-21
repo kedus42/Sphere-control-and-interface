@@ -26,13 +26,14 @@ class sphere:
     bdist=25
     sdist=40
     mpos=0
-    limit=5
+    limit=20
     target=0
     move=False
     pwm_pin=GPIO.PWM(PWM12,1000)
     duty_cycle=75
-    mtl=20
-    k=.5
+    k1=12.92254
+    k2=-0.57392
+    k3=33.42389
 
     def __init__(self):
         self.loopl=156
@@ -41,13 +42,14 @@ class sphere:
         self.bdist=25
         self.sdist=40
         self.mpos=0
-        self.limit=5
+        self.limit=20
         self.target=0
         self.move=False
         self.pwm_pin.start(0)
         self.duty_cycle=75
-        self.mtl=20
-        self.k=.5
+        self.k1=12.92254
+        self.k2=-0.57392
+        self.k3=33.42389
 
         GPIO.setup(M3_CW, GPIO.OUT)
         GPIO.setup(M3_CCW, GPIO.OUT) 
@@ -306,7 +308,7 @@ class sphere:
         if self.mdelay<=0:
             self.mdelay=0
     def convert_to_loopl(self, meter):
-        loopl=int(meter*self.mtl/self.k*self.duty_cycle)
+        loopl=int(meter*k1+self.duty_cycle*k2+k3)
         return loopl
 
 Sphere=sphere()
