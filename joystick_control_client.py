@@ -1,5 +1,7 @@
-import pygame, os
-import paho.mqtt.client as mqttClient
+#!/usr/bin/env python3
+import pygame
+import rospy
+from std_msgs.msg import String
 
 class sphere:
     loopl=156
@@ -55,6 +57,10 @@ class sphere:
         if self.mdelay<=0:
             self.mdelay=0
 
+rospy.init_node("client")
+server_pub = rospy.Publisher('server', String, queue_size=5)
+drive_pub = rospy.Publisher('drive', String, queue_size=5)
+
 pygame.init()
 pygame.display.set_caption('Sphere joystick control')
 surface = pygame.display.set_mode((400, 400))
@@ -106,70 +112,65 @@ while running:
             running = False
         elif event.type == pygame.JOYHATMOTION:
             if event.value != (0,0):
-        #        print(event.value)
                 if event.value[1]==1:
-                    os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"pwmup\"")
-                    os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"pwmup\"")
+                    server_pub.publish("pwmup")
+                    drive_pub.publish("pwmup")
                     Sphere.increase_dc()
                 elif event.value[1]==-1:
-                    os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"pwmdown\"")
-                    os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"pwmdown\"")
+                    server_pub.publish("pwmdown")
+                    drive_pub.publish("pwmdown")
                     Sphere.decrease_dc()
-        #        elif event.value[0]==1:
-        #            os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"right\"")
-        #        else:
-        #            os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"left\"")
         elif event.type == pygame.JOYBUTTONDOWN:
             print(event.button)
             if event.button==2:#X
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"mdelaydown\"")
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"mdelaydown\"")
+                server_pub.publish("mdelaydown")
+                drive_pub.publish("mdelaydown")
                 Sphere.decrease_mdelay()
             elif event.button==1:#B
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"mdelayup\"")
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"mdelayup\"")
+                server_pub.publish("mdelayup")
+                drive_pub.publish("mdelayup")
                 Sphere.increase_mdelay()
             elif event.button==8:#Start
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"balance\"")
+                server_pub.publish("balance")
             elif event.button==3:#Y
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"ccon\"")
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"ccon\"")
+                server_pub.publish("ccon")
+                drive_pub.publish("ccon")
                 cc="On"
             elif event.button==0:#A
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"ccoff\"")
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"ccoff\"")
+                server_pub.publish("ccoff")
+                drive_pub.publish("ccoff")
                 cc="Off"
             elif event.button==5:#RB
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"angleup\"")
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"angleup\"")
+                server_pub.publish("angleup")
+                drive_pub.publish("angleup")
                 Sphere.increase_target()
             elif event.button==4:#LB
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"angledown\"")
-                os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"angledown\"")
+                server_pub.publish("angledown")
+                drive_pub.publish("angledown")
                 Sphere.decrease_target()
         elif event.type==pygame.JOYAXISMOTION:
                 if event.axis==1:
                     if event.value<=-1:
-                        os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"forward\"")
+                        server_pub.publish("foward")
                         send_stop=True
                     elif event.value>=-0.001 and event.value<=0:
                         if send_stop:
-                            os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"stop\"")
-                            os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"stop\"")
+                            server_pub.publish("stop")
+                            drive_pub.publish("stop")
                             send_stop=False
                     elif event.value>=1:
-                        os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"backward\"")
-                        send_stop=True
+                            server_pub.publish("backward")
+                            send_stop=True
                     elif event.value>=-0.001 and event.value<=0:
                         if send_stop:
-                            os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"stop\"")
-                            os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"stop\"")
+                            server_pub.publish("stop")
+                            drive_pub.publish("stop")
                             send_stop=False
                 elif event.axis==3:
                     if event.value<=-1:
-                        os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"left\"")
+                        server_pub.publish("left")
                     elif event.value>=1:
-                        os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"right\"")
+                        server_pub.publish("right")
                 
     pygame.display.flip()
     clock.tick(20)

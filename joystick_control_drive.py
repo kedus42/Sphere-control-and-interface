@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import time, os, math
 import RPi.GPIO as GPIO
-import paho.mqtt.client as mqttClient
+import rospy
+from std_msgs.msg import String
 
 M12_CW=21
 M12_CCW=20
@@ -18,6 +19,8 @@ PWM4=19
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(PWM12, GPIO.OUT)
+
+rospy.init_node("driver")
 
 class sphere:
     loopl=156
@@ -51,58 +54,8 @@ class sphere:
         self.k2=-0.57392
         self.k3=33.42389
 
-        GPIO.setup(M3_CW, GPIO.OUT)
-        GPIO.setup(M3_CCW, GPIO.OUT) 
-        GPIO.setup(PWM3, GPIO.OUT) 
-        GPIO.setup(M4_CW, GPIO.OUT) 
-        GPIO.setup(M4_CCW, GPIO.OUT) 
-        GPIO.setup(PWM4, GPIO.OUT)
         GPIO.setup(M12_CW, GPIO.OUT) 
-        GPIO.setup(M12_CCW, GPIO.OUT) 
-
-    def right_turn(self, k=1, d=sdist):
-        GPIO.output(M3_CW, GPIO.HIGH)
-        GPIO.output(M3_CCW, GPIO.LOW)
-        GPIO.output(PWM3, GPIO.HIGH)
-        GPIO.output(M4_CCW, GPIO.HIGH)
-        GPIO.output(M4_CW, GPIO.LOW)
-        GPIO.output(PWM4, GPIO.HIGH)
-        time.sleep(float((float(d)*float(k))/float(1000)))
-        GPIO.output(M3_CW, GPIO.LOW)
-        GPIO.output(M3_CCW, GPIO.LOW)
-        GPIO.output(PWM3, GPIO.LOW)
-        GPIO.output(M4_CW, GPIO.LOW)
-        GPIO.output(M4_CCW, GPIO.LOW)
-        GPIO.output(PWM4, GPIO.LOW)
-    
-    def left_turn(self, k=1, d=sdist):
-        GPIO.output(M4_CW, GPIO.HIGH)
-        GPIO.output(M4_CCW, GPIO.LOW)
-        GPIO.output(PWM4, GPIO.HIGH)
-        GPIO.output(M3_CCW, GPIO.HIGH)
-        GPIO.output(M3_CW, GPIO.LOW)
-        GPIO.output(PWM3, GPIO.HIGH)
-        time.sleep(float((float(d)*float(k))/float(1000)))
-        GPIO.output(M4_CW, GPIO.LOW)
-        GPIO.output(M4_CCW, GPIO.LOW)
-        GPIO.output(PWM4, GPIO.LOW)
-        GPIO.output(M3_CW, GPIO.LOW)
-        GPIO.output(M3_CCW, GPIO.LOW)
-        GPIO.output(PWM3, GPIO.LOW)
-
-    def adjust_tilt(self, target=0):
-        print("Adjusting tilt...")
-        i=0
-        while (i<10):
-            y,r,p=bno.read_euler()
-            if r > target+5:
-                self.left_turn(d=self.sdist)
-            if r < target-5:
-                self.right_turn(d=self.sdist)
-            i+=1
-            time.sleep(1)
-        self.mpos=0
-        print("Finished.")
+        GPIO.setup(M12_CCW, GPIO.OUT)
 
     def base_motion(self, command="forward"):
         self.move=True
@@ -145,114 +98,6 @@ class sphere:
 
     def stop(self):
         self.move=False
-        
-    def cc_motion(self, command='w', facing_target=1, user_def_target=target):
-        if facing_target:
-                target ,r, p = bno.read_euler()
-        else:
-                y ,r, p = bno.read_euler()
-                target = user_def_target+y
-                target%=360
-        if command=='w':
-            self.print_to_drive("forward")
-        else:
-            self.print_to_drive("backward")
-        i=0
-        self.move=True
-        self.loopl=convert_to_loopl(self.loopl)
-        while (i<self.loopl):
-                y,r,p=bno.read_euler()
-                if y < 180:
-                        if abs(y-target) < y+abs(360-target):
-                                error = y-target
-                        else:
-                                error = y+(360-target)
-                else:
-                        if abs(y-target) < target+abs(360-y):
-                                error = y-target
-                        else:     
-                                error = -1*(target + (360-y))
-                print(self.target, target, y, error)
-                if error <= -5:
-                        if command == 'w':
-                                if self.mpos<self.limit:
-                                        self.right_turn(d=self.bdist)
-                                        print("Right correction")
-                                        self.mpos+=1
-                        else:
-                                if self.mpos>(-1*self.limit):
-                                        self.left_turn(d=self.bdist)
-                                        self.mpos-=1        
-                elif error >= 5:
-                        if command == 'w':
-                                if self.mpos>(-1*self.limit):
-                                        self.left_turn(d=self.bdist)
-                                        print("Left correction")
-                                        self.mpos-=1
-                        else:
-                                if self.mpos<self.limit:
-                                        self.right_turn(d=self.bdist)
-                                        self.mpos+=1
-                i+=1
-                time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
-        os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"stop\"")
-        os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"stop\"")
-        self.adjust_tilt()
-
-    def cc_motion_wt_loopl(self, command='w', facing_target=1, user_def_target=target):
-        if facing_target:
-                target ,r, p = bno.read_euler()
-        else:
-                y ,r, p = bno.read_euler()
-                target = user_def_target+y
-        if command=='w':
-            self.print_to_drive("forward")
-        else:
-            self.print_to_drive("backward")
-        i=0
-        self.move=True
-        while (self.move):
-                y,r,p=bno.read_euler()
-                if y < 180:
-                        if abs(y-target) < y+abs(360-target):
-                                error = y-target
-                        else:
-                                error = y+(360-target)
-                else:
-                        if abs(y-target) < target+abs(360-y):
-                                error = y-target
-                        else:     
-                                error = -1*(target + (360-y))
-                print(self.target, target, y, error)
-                if error <= -5:
-                        if command == 'w':
-                                if self.mpos<self.limit:
-                                        self.right_turn(d=self.bdist)
-                                        print("Right correction")
-                                        self.mpos+=1
-                        else:
-                                if self.mpos>(-1*self.limit):
-                                        self.left_turn(d=self.bdist)
-                                        self.mpos-=1        
-                elif error >= 5:
-                        if command == 'w':
-                                if self.mpos>(-1*self.limit):
-                                        self.left_turn(d=self.bdist)
-                                        print("Left correction")
-                                        self.mpos-=1
-                        else:
-                                if self.mpos<self.limit:
-                                        self.right_turn(d=self.bdist)
-                                        self.mpos+=1
-                i+=1
-                time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
-        self.adjust_tilt()
-    
-    def print_to_drive(self, command):
-        if command == "forward":
-            os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"forward\"")
-        elif command == "backward":
-            os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"backward\"")
     
     def set_loopl(self, loopl):
         self.loopl=loopl
@@ -315,39 +160,33 @@ Sphere=sphere()
 cc=True
 move="stop"
 
-def callback(client, userdata, message):
+def callback(message):
     global cc, move
-    if message.payload=="forward":
+    if message.data=="forward":
         move="forward"
-    elif message.payload=="backward":
+    elif message.data=="backward":
         move="backward"
-    elif message.payload=="stop":
+    elif message.data=="stop":
         Sphere.stop()
         move="stop"
-    elif message.payload=="angleup":
+    elif message.data=="angleup":
         Sphere.increase_target()
-    elif message.payload=="angledown":
+    elif message.data=="angledown":
         Sphere.decrease_target()
-    elif message.payload=="ccon":
+    elif message.data=="ccon":
         cc=True
-    elif message.payload=="ccoff":
+    elif message.data=="ccoff":
         cc=False
-    elif message.payload=="pwmup":
+    elif message.data=="pwmup":
         Sphere.increase_dc()
-    elif message.payload=="pwmdown":
+    elif message.data=="pwmdown":
         Sphere.decrease_dc()
-    elif message.payload=="mdelayup":
+    elif message.data=="mdelayup":
         Sphere.increase_mdelay()
-    elif message.payload=="mdelaydown":
+    elif message.data=="mdelaydown":
         Sphere.decrease_mdelay()
 
-broker_address= "192.168.43.139"
-client = mqttClient.Client("Drive") 
-client.on_message= callback
-client.connect(broker_address) 
-client.loop_start()  
-client.subscribe("drive")
-print("Server up")
+driver_sub=rospy.Subscriber('drive', String, callback=callback)
 
 while True:
     if move=="forward":

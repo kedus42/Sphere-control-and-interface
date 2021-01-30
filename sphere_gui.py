@@ -1,7 +1,12 @@
-import sys, os
+#!/usr/bin/env python3
+import sys
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QInputDialog
-import paho.mqtt.client as mqttClient
+import rospy
+from std_msgs.msg import String
+
+rospy.init_node("gui")
+gui_pub = rospy.Publisher('gui', String, queue_size=1)
 
 class window(QMainWindow):
     def __init__(self):
@@ -28,19 +33,19 @@ class window(QMainWindow):
         self.xy=QInputDialog(self)
         self.x, xpressed=self.xy.getInt(self,"Set x target", "", 0, -250, 250, 1)
         self.y, ypressed=self.xy.getInt(self,"Set y target", "", 0, -250, 250, 1)
-        os.system("mosquitto_pub -h 192.168.43.139 -t \"gui\" -m \"xy"+" "+str(self.x)+" "+str(self.y)+" \"")
+        gui_pub.publish("xy"+" "+str(self.x)+" "+str(self.y)+" ")
 
     
     def b9_clicked(self):
         self.direction_dist=QInputDialog(self)
         self.direction, direction_pressed=self.direction_dist.getInt(self,"Set direction", "", 0, -180, 180, 1)
         self.distance, distance_pressed=self.direction_dist.getInt(self,"Set distance", "", 0, 0, 250, 1)
-        os.system("mosquitto_pub -h 192.168.43.139 -t \"gui\" -m \"dd"+" "+str(self.direction)+" "+str(self.distance)+" \"")
+        gui_pub.publish("dd"+" "+str(self.direction)+" "+str(self.distance)+" ")
 
     def b10_clicked(self):
         self.set_loopl=QInputDialog(self)
         self.new_loopl, loopl_pressed=self.set_loopl.getInt(self, "Set loopl", "", 0, 0, 250, 1)
-        os.system("mosquitto_pub -h 192.168.43.139 -t \"gui\" -m \"di"+" "+str(self.new_loopl)+" \"")
+        gui_pub.publish("di"+" "+str(self.new_loopl)+" ")
 
 app=QApplication(sys.argv)
 win=window()

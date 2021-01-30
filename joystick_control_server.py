@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-import time, os, math
+import time, math
 import RPi.GPIO as GPIO
 from Adafruit_BNO055 import BNO055
-import paho.mqtt.client as mqttClient
+import rospy
+from std_msgs.msg import String
+from sphere-control.msg import cc_msg
 
 M12_CW=21
 M12_CCW=20
@@ -20,6 +22,11 @@ GPIO.setwarnings(False)
 
 bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
 bno.begin()
+
+rospy.init_node("server")
+server_pub = rospy.Publisher('server', String, queue_size=5)
+drive_pub = rospy.Publisher('drive', String, queue_size=5)
+cc_pub = rospy.Publisher('cc', String, queue_size=5)
 
 class sphere:
     loopl=156
@@ -93,7 +100,7 @@ class sphere:
         GPIO.output(PWM3, GPIO.LOW)
 
     def adjust_tilt(self, target=0):
-        print("Adjusting tilt...")
+        rospy.loginfo("Adjusting tilt...")
         i=0
         while (i<10):
             y,r,p=bno.read_euler()
@@ -104,7 +111,7 @@ class sphere:
             i+=1
             time.sleep(1)
         self.mpos=0
-        print("Finished.")
+        rospy.loginfo("Finished.")
 
     def base_motion(self, command="forward"):
         self.move=True
@@ -162,6 +169,7 @@ class sphere:
         i=0
         self.move=True
         self.loopl=convert_to_loopl(self.loopl)
+        cc_message=cc_msg()
         while (i<self.loopl):
                 y,r,p=bno.read_euler()
                 if y < 180:
@@ -174,12 +182,10 @@ class sphere:
                                 error = y-target
                         else:     
                                 error = -1*(target + (360-y))
-                print(self.target, target, y, error)
                 if error <= -5:
                         if command == 'w':
                                 if self.mpos<self.limit:
                                         self.right_turn(d=self.bdist)
-                                        print("Right correction")
                                         self.mpos+=1
                         else:
                                 if self.mpos>(-1*self.limit):
@@ -189,16 +195,19 @@ class sphere:
                         if command == 'w':
                                 if self.mpos>(-1*self.limit):
                                         self.left_turn(d=self.bdist)
-                                        print("Left correction")
                                         self.mpos-=1
                         else:
                                 if self.mpos<self.limit:
                                         self.right_turn(d=self.bdist)
                                         self.mpos+=1
                 i+=1
+                cc_message.error=error
+                cc_message.target=target
+                cc_message.yaw=y
+                cc_pub.publish(cc_message)
                 time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
-        os.system("mosquitto_pub -h 192.168.43.139 -t \"test\" -m \"stop\"")
-        os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"stop\"")
+        server_pub.publsh("stop")
+        drive_pub.publish("stop")
         self.adjust_tilt()
 
     def cc_motion_wt_loopl(self, command='w', facing_target=1, user_def_target=target):
@@ -213,6 +222,7 @@ class sphere:
             self.print_to_drive("backward")
         i=0
         self.move=True
+        cc_message=cc_msg()
         while (self.move):
                 y,r,p=bno.read_euler()
                 if y < 180:
@@ -225,12 +235,10 @@ class sphere:
                                 error = y-target
                         else:     
                                 error = -1*(target + (360-y))
-                print(self.target, target, y, error)
                 if error <= -5:
                         if command == 'w':
                                 if self.mpos<self.limit:
                                         self.right_turn(d=self.bdist)
-                                        print("Right correction")
                                         self.mpos+=1
                         else:
                                 if self.mpos>(-1*self.limit):
@@ -240,21 +248,24 @@ class sphere:
                         if command == 'w':
                                 if self.mpos>(-1*self.limit):
                                         self.left_turn(d=self.bdist)
-                                        print("Left correction")
                                         self.mpos-=1
                         else:
                                 if self.mpos<self.limit:
                                         self.right_turn(d=self.bdist)
                                         self.mpos+=1
                 i+=1
+                cc_message.error=error
+                cc_message.target=target
+                cc_message.yaw=y
+                cc_pub.publish(cc_message)
                 time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
         self.adjust_tilt()
     
     def print_to_drive(self, command):
         if command == "forward":
-            os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"forward\"")
+            drive_pub.publish("forward")
         elif command == "backward":
-            os.system("mosquitto_pub -h 192.168.43.139 -t \"drive\" -m \"backward\"")          
+            drive_pub.publish("backward")         
 
     def set_loopl(self, loopl):
         self.loopl=loopl
@@ -317,88 +328,76 @@ Sphere=sphere()
 cc=True
 move="Stop"
 
-def callback(client, userdata, message):
+def callback(message):
     global cc, target, move
-    if message.payload=="forward":
+    if message.data=="forward":
         if not cc:
             Sphere.print_to_drive("forward")
         else:
             move="forward"
-    elif message.payload=="backward":
+    elif message.data=="backward":
         if not cc:
             Sphere.print_to_drive("backward")
         else:
             move="backward"
-    elif message.payload=="right":
+    elif message.data=="right":
         Sphere.right_turn()
-    elif message.payload=="left":
+    elif message.data=="left":
         Sphere.left_turn()
-    elif message.payload=="balance":
+    elif message.data=="balance":
         Sphere.adjust_tilt()
-    elif message.payload=="angleup":
+    elif message.data=="angleup":
         Sphere.increase_target()
-    elif message.payload=="angledown":
+    elif message.data=="angledown":
         Sphere.decrease_target()
-    elif message.payload=="ccon":
+    elif message.data=="ccon":
         cc=True
-    elif message.payload=="ccoff":
+    elif message.data=="ccoff":
         cc=False
-    elif message.payload=="stop":
+    elif message.data=="stop":
         Sphere.stop()
         move="stop"
-    elif message.payload=="pwmup":
+    elif message.data=="pwmup":
         Sphere.increase_dc()
-    elif message.payload=="pwmdown":
+    elif message.data=="pwmdown":
         Sphere.decrease_dc()
-    elif message.payload=="mdelayup":
+    elif message.data=="mdelayup":
         Sphere.increase_mdelay()
-    elif message.payload=="mdelaydown":
+    elif message.data=="mdelaydown":
         Sphere.decrease_mdelay()
 
-def gui_callback(client, userdata, message):
-    if message.payload[0]=='x' and message.payload[1]=='y':
+def gui_callback(message):
+    if message.data[0]=='x' and message.data[1]=='y':
         xy=[]
         num=""
-        for char in message.payload[3:]:
+        for char in message.data[3:]:
             num+=str(char)
             if char ==' ':
                 xy.append(int(num))
                 num=""
         Sphere.set_xy(xy[0], xy[1])
 
-    elif message.payload[0]=='d' and message.payload[1]=='d':
+    elif message.data[0]=='d' and message.data[1]=='d':
         dd=[]
         num=""
-        for char in message.payload[3:]:
+        for char in message.data[3:]:
             num+=str(char)
             if char ==' ':
                 dd.append(int(num))
                 num=""
         Sphere.set_direction_dist(dd[0], dd[1])
-    elif message.payload[0]=='d' and message.payload[1]=='i':
+    elif message.data[0]=='d' and message.data[1]=='i':
         di=[]
         num=""
-        for char in message.payload[3:]:
+        for char in message.data[3:]:
             num+=str(char)
             if char ==' ':
                 di.append(int(num))
                 num=""
         Sphere.set_direction_dist(0, di[0])
 
-broker_address= "192.168.43.139"
-client = mqttClient.Client("Server") 
-client.on_message= callback
-client.connect(broker_address) 
-client.loop_start()  
-client.subscribe("test")
-print("Base server up")
-
-client2 = mqttClient.Client("Gui server") 
-client2.on_message= gui_callback
-client2.connect(broker_address) 
-client2.loop_start()  
-client2.subscribe("gui")
-print("Gui server up")
+server_sub = rospy.Subscriber('server', String, callback=callback)
+gui_sub = rospy.Subscriber('gui', String, gui_callback)
 
 while True:
     if move=="forward":
