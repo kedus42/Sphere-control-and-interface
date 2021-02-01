@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import time, math
 import RPi.GPIO as GPIO
-from Adafruit_BNO055 import BNO055
 import rospy
 from std_msgs.msg import String
-from sphere-control.msg import cc_msg
+from sphere_control.msg import cc_msg
+from sphere_control.srv import IMU, IMUResponse
 
 M12_CW=21
 M12_CCW=20
@@ -20,13 +20,13 @@ PWM4=19
 
 GPIO.setwarnings(False)
 
-bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
-bno.begin()
-
 rospy.init_node("server")
+rospy.wait_for_service('imu_server')
 server_pub = rospy.Publisher('server', String, queue_size=5)
 drive_pub = rospy.Publisher('drive', String, queue_size=5)
 cc_pub = rospy.Publisher('cc', String, queue_size=5)
+imu_client = rospy.ServiceProxy('imu_server', IMU)
+resp=IMUResponse()
 
 class sphere:
     loopl=156
@@ -103,7 +103,8 @@ class sphere:
         rospy.loginfo("Adjusting tilt...")
         i=0
         while (i<10):
-            y,r,p=bno.read_euler()
+            resp=imu_client(1)
+            y,r,p=resp.yaw, resp.pitch, resp.roll
             if r > target+5:
                 self.left_turn(d=self.sdist)
             if r < target-5:
@@ -157,9 +158,11 @@ class sphere:
         
     def cc_motion(self, command='w', facing_target=1, user_def_target=target):
         if facing_target:
-                target ,r, p = bno.read_euler()
+                resp=imu_client(1)
+                target ,r, p = resp.yaw, resp.pitch, resp.roll
         else:
-                y ,r, p = bno.read_euler()
+                resp=imu_client(1)
+                y ,r, p = resp.yaw, resp.pitch, resp.roll
                 target = user_def_target+y
                 target%=360
         if command=='w':
@@ -171,7 +174,8 @@ class sphere:
         self.loopl=convert_to_loopl(self.loopl)
         cc_message=cc_msg()
         while (i<self.loopl):
-                y,r,p=bno.read_euler()
+                resp=imu_client(1)
+                y,r,p=resp.yaw, resp.pitch, resp.roll
                 if y < 180:
                         if abs(y-target) < y+abs(360-target):
                                 error = y-target
@@ -212,9 +216,11 @@ class sphere:
 
     def cc_motion_wt_loopl(self, command='w', facing_target=1, user_def_target=target):
         if facing_target:
-                target ,r, p = bno.read_euler()
+                resp=imu_client(1)
+                target ,r, p = resp.yaw, resp.pitch, resp.roll
         else:
-                y ,r, p = bno.read_euler()
+                resp=imu_client(1)
+                y ,r, p = resp.yaw, resp.pitch, resp.roll
                 target = user_def_target+y
         if command=='w':
             self.print_to_drive("forward")
@@ -224,7 +230,8 @@ class sphere:
         self.move=True
         cc_message=cc_msg()
         while (self.move):
-                y,r,p=bno.read_euler()
+                resp=imu_client(1)
+                y,r,p=resp.yaw, resp.pitch, resp.roll
                 if y < 180:
                         if abs(y-target) < y+abs(360-target):
                                 error = y-target
