@@ -3,61 +3,68 @@ import pygame
 import rospy
 from std_msgs.msg import String
 
+rospy.init_node("client")
+
 class sphere:
     loopl=156
-    mdelay=50
+    mdelay=rospy.get_param("/mdelay")
     o_range=5
     bdist=25
     sdist=40
     mpos=0
     limit=5
-    target=0
+    target=rospy.get_param("/target")
     move=False
-    duty_cycle=75
+    duty_cycle=rospy.get_param("/duty_cycle")
     
     def __init__(self):
         self.loopl=156
-        self.mdelay=75
+        self.mdelay=rospy.get_param("/mdelay")
         self.o_range=5
         self.bdist=25
         self.sdist=40
         self.mpos=0
         self.limit=5
-        self.target=0
+        self.target=rospy.get_param("/target")
         self.move=False
-        self.duty_cycle=75
+        self.duty_cycle=rospy.get_param("/duty_cycle")
 
     def increase_target(self):
         self.target+=5
         if self.target>=180:
             self.target=-180
+        rospy.set_param('/target', self.target)
         
     def decrease_target(self):
         self.target-=5
         if self.target<=-180:
             self.target=180
+        rospy.set_param('/target', self.target)
 
     def increase_dc(self):
         self.duty_cycle+=5
         if self.duty_cycle>=100:
             self.duty_cycle=100
+        rospy.set_param('/duty_cycle', self.duty_cycle)
     
     def decrease_dc(self):
         self.duty_cycle-=5
         if self.duty_cycle<=0:
             self.duty_cycle=0
+        rospy.set_param('/duty_cycle', self.duty_cycle)
     
     def increase_mdelay(self):
         self.mdelay+=5
         if self.mdelay>=200:
             self.mdelay=200
+        rospy.set_param('/mdelay', self.mdelay)
     
     def decrease_mdelay(self):
         self.mdelay-=5
         if self.mdelay<=0:
             self.mdelay=0
+        rospy.set_param('/mdelay', self.mdelay)
 
-rospy.init_node("client")
 server_pub = rospy.Publisher('server', String, queue_size=5)
 drive_pub = rospy.Publisher('drive', String, queue_size=5)
 
@@ -73,25 +80,25 @@ joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_coun
 for joy in joysticks:
     joy.init()
 
-cc="On"
+cc=rospy.get_param("/cc")
 
 Sphere=sphere()
 
 cc_text = font.render('  Course correction: '+str(cc)+'  ', True, (0,0,0), (255,255,255))
 ccRect = cc_text.get_rect()
-ccRect.center = (150, 60)
+ccRect.center = (160, 60)
 
 target_text = font.render('  Target: '+str(Sphere.target)+'  ', True, (0,0,0), (255,255,255))
 targetRect = target_text.get_rect()
-targetRect.center = (70, 140)
+targetRect.center = (60, 140)
 
 mdelay_text = font.render('  mdelay: '+str(Sphere.mdelay)+'  ', True, (0,0,0), (255,255,255))
 mdelayRect = mdelay_text.get_rect()
-mdelayRect.center = (80, 220)
+mdelayRect.center = (75, 220)
 
 dc_text = font.render('  Duty cycle: '+str(Sphere.duty_cycle)+'  ', True, (0,0,0), (255,255,255))
 dcRect = dc_text.get_rect()
-dcRect.center = (110, 300)
+dcRect.center = (95, 300)
 
 send_stop=False
 
@@ -113,41 +120,43 @@ while running:
         elif event.type == pygame.JOYHATMOTION:
             if event.value != (0,0):
                 if event.value[1]==1:
+                    Sphere.increase_dc()
                     server_pub.publish("pwmup")
                     drive_pub.publish("pwmup")
-                    Sphere.increase_dc()
                 elif event.value[1]==-1:
+                    Sphere.decrease_dc()
                     server_pub.publish("pwmdown")
                     drive_pub.publish("pwmdown")
-                    Sphere.decrease_dc()
         elif event.type == pygame.JOYBUTTONDOWN:
             print(event.button)
             if event.button==2:#X
+                Sphere.decrease_mdelay()
                 server_pub.publish("mdelaydown")
                 drive_pub.publish("mdelaydown")
-                Sphere.decrease_mdelay()
             elif event.button==1:#B
+                Sphere.increase_mdelay()
                 server_pub.publish("mdelayup")
                 drive_pub.publish("mdelayup")
-                Sphere.increase_mdelay()
             elif event.button==8:#Start
                 server_pub.publish("balance")
             elif event.button==3:#Y
+                rospy.set_param("/cc", "True")
                 server_pub.publish("ccon")
                 drive_pub.publish("ccon")
                 cc="On"
             elif event.button==0:#A
+                rospy.set_param("/cc", "False")
                 server_pub.publish("ccoff")
                 drive_pub.publish("ccoff")
                 cc="Off"
             elif event.button==5:#RB
+                Sphere.increase_target()
                 server_pub.publish("angleup")
                 drive_pub.publish("angleup")
-                Sphere.increase_target()
             elif event.button==4:#LB
+                Sphere.decrease_target()
                 server_pub.publish("angledown")
                 drive_pub.publish("angledown")
-                Sphere.decrease_target()
         elif event.type==pygame.JOYAXISMOTION:
                 if event.axis==1:
                     if event.value<=-1:

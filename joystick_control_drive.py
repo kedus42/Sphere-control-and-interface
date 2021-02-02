@@ -24,32 +24,32 @@ rospy.init_node("driver")
 
 class sphere:
     loopl=156
-    mdelay=50
+    mdelay=rospy.get_param("/mdelay")
     o_range=5
     bdist=25
     sdist=40
     mpos=0
     limit=20
-    target=0
+    target=rospy.get_param("/target")
     move=False
     pwm_pin=GPIO.PWM(PWM12,1000)
-    duty_cycle=75
+    duty_cycle=rospy.get_param("/duty_cycle")
     k1=12.92254
     k2=-0.57392
     k3=33.42389
 
     def __init__(self):
         self.loopl=156
-        self.mdelay=75
+        self.mdelay=rospy.get_param("/mdelay")
         self.o_range=5
         self.bdist=25
         self.sdist=40
         self.mpos=0
         self.limit=20
-        self.target=0
+        self.target=rospy.get_param("/target")
         self.move=False
         self.pwm_pin.start(0)
-        self.duty_cycle=75
+        self.duty_cycle=rospy.get_param("/duty_cycle")
         self.k1=12.92254
         self.k2=-0.57392
         self.k3=33.42389
@@ -124,32 +124,32 @@ class sphere:
         self.cc_motion(command='w', facing_target=0, user_def_target=direction)
 
     def increase_target(self):
-        self.target+=5
+        self.target=rospy.get_param("/target")
         if self.target>=180:
             self.target=-180
         
     def decrease_target(self):
-        self.target-=5
+        self.target=rospy.get_param("/target")
         if self.target<=-180:
             self.target=180
 
     def increase_dc(self):
-        self.duty_cycle+=5
+        self.duty_cycle=rospy.get_param("/duty_cycle")
         if self.duty_cycle>=100:
             self.duty_cycle=100
     
     def decrease_dc(self):
-        self.duty_cycle-=5
+        self.duty_cycle=rospy.get_param("/duty_cycle")
         if self.duty_cycle<=0:
             self.duty_cycle=0
     
     def increase_mdelay(self):
-        self.mdelay+=5
+        self.mdelay=rospy.get_param("/mdelay")
         if self.mdelay>=200:
             self.mdelay=200
     
     def decrease_mdelay(self):
-        self.mdelay-=5
+        self.mdelay=rospy.get_param("/mdelay")
         if self.mdelay<=0:
             self.mdelay=0
     def convert_to_loopl(self, meter):
@@ -157,7 +157,7 @@ class sphere:
         return loopl
 
 Sphere=sphere()
-cc=True
+cc=rospy.get_param("/cc")
 move="stop"
 
 def callback(message):
@@ -174,9 +174,9 @@ def callback(message):
     elif message.data=="angledown":
         Sphere.decrease_target()
     elif message.data=="ccon":
-        cc=True
+        cc=rospy.get_param("/cc")
     elif message.data=="ccoff":
-        cc=False
+        cc=rospy.get_param("/cc")
     elif message.data=="pwmup":
         Sphere.increase_dc()
     elif message.data=="pwmdown":
