@@ -70,7 +70,7 @@ drive_pub = rospy.Publisher('drive', String, queue_size=5)
 
 pygame.init()
 pygame.display.set_caption('Sphere joystick control')
-surface = pygame.display.set_mode((400, 400))
+surface = pygame.display.set_mode((875, 325))
 clock = pygame.time.Clock()
 running = True
 
@@ -81,6 +81,10 @@ for joy in joysticks:
     joy.init()
 
 cc=rospy.get_param("/cc")
+if cc==True:
+    cc="On"
+else:
+    cc="Off"
 
 Sphere=sphere()
 
@@ -100,6 +104,8 @@ dc_text = font.render('  Duty cycle: '+str(Sphere.duty_cycle)+'  ', True, (0,0,0
 dcRect = dc_text.get_rect()
 dcRect.center = (95, 300)
 
+controls = pygame.image.load('/home/kedus/Workspace/catkin_ws/src/sphere_control/src/Sphere-control-and-interface/joystick.png')
+
 send_stop=False
 
 while running:
@@ -113,6 +119,7 @@ while running:
     surface.blit(target_text, targetRect)
     surface.blit(cc_text, ccRect)
     surface.blit(dc_text, dcRect)
+    surface.blit(controls, (350,0))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
