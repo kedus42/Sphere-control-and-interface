@@ -1,4 +1,4 @@
-#Set up instructions:
+#Set up instructions\
 Create a new ros package titled sphere_control in the catkin workspace of both your local machine and the sphere
 Delete the CMakeLists.txt and package.xml files that will be cretaed by default in the package's directory
 Clone the repository into the now empty sphere_control package of both the local machine and the sphere
