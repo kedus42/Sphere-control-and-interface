@@ -8,7 +8,7 @@ Build with catkin_make\
 Connect the sphere and your machine to the same network\
 Run roscore on both your machine and the sphere\
 Export the ROS master of the sphere to the master on your machine by running the export command below on the sphere\
-First replace "URI" with your machine's ROS_MASTER_URI which will likely be http://username:11311/\
+First replace "URI" with your machine's ROS_MASTER_URI which will likely be http://username:11311/ \
 If not, find the URI listed under the info printed by roscore\
         export ROS_MASTER_URI="URI"\
 Run "roslaunch sphere_control launch_local.launch" on your machine\
