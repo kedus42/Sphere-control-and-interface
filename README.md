@@ -12,4 +12,4 @@ export ROS_MASTER_URI="URI"\
 First replace "URI" with your machine's ROS_MASTER_URI which will likely be http://username:11311/ \
 If not, find the URI listed under the info printed by roscore\
 Run "roslaunch sphere_control launch_local.launch" on your machine\
-Run "roslaunch sphere_control launch_sphere.launch" on the sphere\
+Run "roslaunch sphere_control launch_sphere.launch" on the sphere
