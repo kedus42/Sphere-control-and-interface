@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <param name="mdelay" type="int" value="75" />
+  <param name="duty_cycle" type="int" value="75" />
+  <param name="target" type="int" value="0" />
+  <param name="cc" type="bool" value="True" />
+  <node name="client" pkg="sphere_control" type="joystick_control_client.py"/>
+  <node name="gui" pkg="sphere_control" type="sphere_gui.py"/>
+</launch>
