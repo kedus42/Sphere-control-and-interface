@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2.7
 import rospy
 from Adafruit_BNO055 import BNO055
 import rospy
