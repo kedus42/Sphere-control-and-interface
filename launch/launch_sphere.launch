@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
-  <node name="imu_server" pkg="sphere_control" type="imu_server.py" />
+  <node name="imu_server" pkg="sphere_control" type="imu_server.py" output="screen"/>
   <node name="server" pkg="sphere_control" type="joystick_control_server.py" />
   <node name="driver" pkg="sphere_control" type="joystick_control_drive.py" />
 </launch>
