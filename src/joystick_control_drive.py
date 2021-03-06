@@ -21,7 +21,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(PWM12, GPIO.OUT)
 
 rospy.init_node("driver")
-rospy.wait_for_service('imu_server')
+#rospy.wait_for_service('imu_server')
 
 class sphere:
     loopl=156
