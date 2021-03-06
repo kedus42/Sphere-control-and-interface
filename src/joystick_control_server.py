@@ -355,8 +355,10 @@ def callback(message):
         Sphere.decrease_target()
     elif message.data=="ccon":
         cc=rospy.get_param("/cc")
+        cc=True
     elif message.data=="ccoff":
         cc=rospy.get_param("/cc")
+        cc=False
     elif message.data=="stop":
         Sphere.stop()
         move="stop"
