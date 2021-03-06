@@ -36,7 +36,7 @@ class sphere:
     mdelay=rospy.get_param("/mdelay")
     o_range=5
     bdist=25
-    sdist=40
+    sdist=25
     mpos=0
     limit=20
     target=rospy.get_param("/target")
@@ -51,7 +51,7 @@ class sphere:
         self.mdelay=rospy.get_param("/mdelay")
         self.o_range=5
         self.bdist=25
-        self.sdist=40
+        self.sdist=25
         self.mpos=0
         self.limit=20
         self.target=rospy.get_param("/target")
