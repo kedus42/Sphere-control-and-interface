@@ -1,10 +1,11 @@
+#!/usr/bin/env python2.7
 import rospy
 import picamera
 import time
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
-
+rospy.init_node('cam_server')
 bridge = CvBridge()
 camera_pub=rospy.Publisher('cam', Image, queue_size=30)
 camera=picamera.PiCamera()
