@@ -20,8 +20,8 @@ M4_CCW=23
 PWM4=19
 
 GPIO.setwarnings(False)
-bno.begin()
 bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
+bno.begin()
 
 rospy.init_node("server")
 #rospy.wait_for_service('imu_server')
