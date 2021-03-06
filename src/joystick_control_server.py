@@ -8,7 +8,7 @@ from sphere_control.srv import IMU, IMUResponse
 
 M12_CW=21
 M12_CCW=20
-PWM12=16
+PWM12=12
 
 M3_CW=17
 M3_CCW=27
@@ -24,7 +24,7 @@ rospy.init_node("server")
 rospy.wait_for_service('imu_server')
 server_pub = rospy.Publisher('server', String, queue_size=5)
 drive_pub = rospy.Publisher('drive', String, queue_size=5)
-cc_pub = rospy.Publisher('cc', String, queue_size=5)
+cc_pub = rospy.Publisher('cc', cc_msg, queue_size=5)
 imu_client = rospy.ServiceProxy('imu_server', IMU)
 resp=IMUResponse()
 

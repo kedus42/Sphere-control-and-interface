@@ -15,4 +15,5 @@ def callback(req):
     return resp
 
 server = rospy.Service('imu_server', IMU, callback)
-rospy.spin()
+while True:
+    rospy.spin()
