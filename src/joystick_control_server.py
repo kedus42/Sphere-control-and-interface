@@ -171,7 +171,7 @@ class sphere:
             self.print_to_drive("backward")
         i=0
         self.move=True
-        self.loopl=convert_to_loopl(self.loopl)
+        self.loopl=self.convert_to_loopl(self.loopl)
         cc_message=cc_msg()
         while (i<self.loopl):
                 y,r,p=bno.read_euler()
