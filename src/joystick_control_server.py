@@ -9,7 +9,7 @@ from Adafruit_BNO055 import BNO055
 
 M12_CW=21
 M12_CCW=20
-PWM12=12
+#PWM12=12
 
 M3_CW=17
 M3_CCW=27
@@ -68,9 +68,9 @@ class sphere:
         GPIO.setup(M4_CW, GPIO.OUT) 
         GPIO.setup(M4_CCW, GPIO.OUT) 
         GPIO.setup(PWM4, GPIO.OUT)
-        GPIO.setup(M12_CW, GPIO.OUT) 
-        GPIO.setup(M12_CCW, GPIO.OUT) 
-        GPIO.setup(PWM12, GPIO.OUT)
+        #GPIO.setup(M12_CW, GPIO.OUT) 
+        #GPIO.setup(M12_CCW, GPIO.OUT) 
+        #GPIO.setup(PWM12, GPIO.OUT)
 
     def right_turn(self, k=1, d=sdist):
         GPIO.output(M3_CW, GPIO.HIGH)
