@@ -334,15 +334,9 @@ move="Stop"
 def callback(message):
     global cc, target, move
     if message.data=="forward":
-        if not cc:
-            Sphere.print_to_drive("forward")
-        else:
-            move="forward"
+        move="forward"
     elif message.data=="backward":
-        if not cc:
-            Sphere.print_to_drive("backward")
-        else:
-            move="backward"
+        move="backward"
     elif message.data=="right":
         Sphere.right_turn()
     elif message.data=="left":
