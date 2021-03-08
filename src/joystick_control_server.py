@@ -219,10 +219,10 @@ class sphere:
         else:
                 y ,r, p = bno.read_euler()
                 target = user_def_target+y
-        if command=='w':
-            self.print_to_drive("forward")
-        else:
-            self.print_to_drive("backward")
+        #if command=='w':
+        #    self.print_to_drive("forward")
+        #else:
+        #    self.print_to_drive("backward")
         i=0
         self.move=True
         cc_message=cc_msg()
