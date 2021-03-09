@@ -9,7 +9,7 @@ from Adafruit_BNO055 import BNO055
 
 M12_CW=21
 M12_CCW=20
-PWM12=12
+PWM12=24
 
 M3_CW=17
 M3_CCW=27
