@@ -109,8 +109,10 @@ class sphere:
             y, r, p = bno.read_euler()
             if r > target+5:
                 self.left_turn(d=self.sdist)
-            if r < target-5:
+            elif r < target-5:
                 self.right_turn(d=self.sdist)
+            else:
+                break
             i+=1
             time.sleep(1)
         self.mpos=0
