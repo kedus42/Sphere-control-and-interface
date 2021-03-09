@@ -30,7 +30,7 @@ class sphere:
     bdist=25
     sdist=25
     mpos=0
-    limit=20
+    limit=5
     target=rospy.get_param("/target")
     move=False
     pwm_pin=GPIO.PWM(PWM12,1000)
@@ -46,7 +46,7 @@ class sphere:
         self.bdist=25
         self.sdist=25
         self.mpos=0
-        self.limit=20
+        self.limit=5
         self.target=rospy.get_param("/target")
         self.move=False
         self.pwm_pin.start(0)
