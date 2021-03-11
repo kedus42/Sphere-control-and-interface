@@ -7,10 +7,6 @@ from sphere_control.msg import cc_msg
 from sphere_control.srv import IMU, IMUResponse
 from Adafruit_BNO055 import BNO055
 
-M12_CW=21
-M12_CCW=20
-PWM12=24
-
 M3_CW=17
 M3_CCW=27
 PWM3=13
@@ -68,9 +64,6 @@ class sphere:
         GPIO.setup(M4_CW, GPIO.OUT) 
         GPIO.setup(M4_CCW, GPIO.OUT) 
         GPIO.setup(PWM4, GPIO.OUT)
-        GPIO.setup(M12_CW, GPIO.OUT) 
-        GPIO.setup(M12_CCW, GPIO.OUT) 
-        GPIO.setup(PWM12, GPIO.OUT)
 
     def right_turn(self, k=1, d=sdist):
         GPIO.output(M3_CW, GPIO.HIGH)
@@ -117,45 +110,6 @@ class sphere:
             time.sleep(1)
         self.mpos=0
         rospy.loginfo("Finished.")
-
-    def base_motion(self, command="forward"):
-        self.move=True
-        if command=="forward":
-            while self.move:
-                GPIO.output(M12_CW, GPIO.HIGH)
-                GPIO.output(M12_CCW, GPIO.LOW)
-                GPIO.output(PWM12, self.duty_cycle)
-                time.sleep(float(float(self.mdelay)/float(1000)))
-                GPIO.output(M12_CW, GPIO.LOW)
-                GPIO.output(M12_CCW, GPIO.LOW)
-                GPIO.output(PWM12, GPIO.LOW)
-                time.sleep(float(float(self.mdelay)/float(1000)))
-            
-            time.sleep(2*float(float(self.mdelay)/float(1000)))
-            GPIO.output(M12_CW, GPIO.HIGH)
-            GPIO.output(PWM12, self.duty_cycle)
-            time.sleep(float(float(self.mdelay)/float(1000)))
-            GPIO.output(M12_CW, GPIO.LOW)
-            GPIO.output(M12_CCW, GPIO.LOW)
-            GPIO.output(PWM12, GPIO.LOW)
-        else:
-            while self.move:
-                GPIO.output(M12_CCW, GPIO.HIGH)
-                GPIO.output(M12_CW, GPIO.LOW)
-                GPIO.output(PWM12, self.duty_cycle)
-                time.sleep(float(float(self.mdelay)/float(1000)))
-                GPIO.output(M12_CW, GPIO.LOW)
-                GPIO.output(M12_CCW, GPIO.LOW)
-                GPIO.output(PWM12, GPIO.LOW)
-                time.sleep(float(float(self.mdelay)/float(1000)))
-            
-            time.sleep(2*float(float(self.mdelay)/float(1000)))
-            GPIO.output(M12_CCW, GPIO.HIGH)
-            GPIO.output(PWM12, self.duty_cycle)
-            time.sleep(float(float(self.mdelay)/float(1000)))
-            GPIO.output(M12_CW, GPIO.LOW)
-            GPIO.output(M12_CCW, GPIO.LOW)
-            GPIO.output(PWM12, GPIO.LOW)
 
     def stop(self):
         self.move=False
