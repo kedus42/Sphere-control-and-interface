@@ -165,7 +165,7 @@ class sphere:
                 cc_message.yaw=y
                 cc_pub.publish(cc_message)
                 time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
-        server_pub.publsh("stop")
+        server_pub.publish("stop")
         drive_pub.publish("stop")
         self.adjust_tilt()
 
