@@ -280,7 +280,7 @@ class sphere:
         if self.mdelay<=0:
             self.mdelay=0
     def convert_to_loopl(self, meter):
-        loopl=int(meter*k1+self.duty_cycle*k2+k3)
+        loopl=int(meter*self.k1+self.duty_cycle*self.k2+self.k3)
         return loopl
 
 Sphere=sphere()
