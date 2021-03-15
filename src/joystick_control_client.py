@@ -167,10 +167,8 @@ while running:
         elif event.type==pygame.JOYAXISMOTION:
                 if event.axis==1:
                     if event.value<=-1:
-                        if cc=="On":
-                            server_pub.publish("forward")
-                        else:
-                            drive_pub.publish("forward")
+                        server_pub.publish("forward")
+                        drive_pub.publish("forward")
                         send_stop=True
                     elif event.value>=-0.001 and event.value<=0:
                         if send_stop:
@@ -178,10 +176,8 @@ while running:
                             drive_pub.publish("stop")
                             send_stop=False
                     elif event.value>=1:
-                        if cc=="On":
-                            server_pub.publish("backward")
-                        else:
-                            drive_pub.publish("backward")
+                        server_pub.publish("backward")
+                        drive_pub.publish("backward")
                         send_stop=True
                     elif event.value>=-0.001 and event.value<=0:
                         if send_stop:
