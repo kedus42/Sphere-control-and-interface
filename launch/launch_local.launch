@@ -5,5 +5,6 @@
   <param name="target" type="int" value="0" />
   <param name="cc" type="bool" value="True" />
   <node name="client" pkg="sphere_control" type="joystick_control_client.py" output="screen"/>
+  <node name="honing" pkg="sphere_cotnrol" type="hone_in.py" output="screen"/>
   <!--node name="gui" pkg="sphere_control" type="sphere_gui.py" output="screen"/-->
 </launch>
