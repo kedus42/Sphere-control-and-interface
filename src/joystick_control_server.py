@@ -4,7 +4,7 @@ import RPi.GPIO as GPIO
 import rospy
 from std_msgs.msg import String
 from sphere_control.msg import cc_msg
-from sphere_control.srv import IMU, IMUResponse
+#from sphere_control.srv import IMU, IMUResponse
 from Adafruit_BNO055 import BNO055
 
 M3_CW=17
@@ -25,7 +25,7 @@ server_pub = rospy.Publisher('server', String, queue_size=5)
 drive_pub = rospy.Publisher('drive', String, queue_size=5)
 cc_pub = rospy.Publisher('cc', cc_msg, queue_size=5)
 #imu_client = rospy.ServiceProxy('imu_server', IMU)
-resp=IMUResponse()
+#resp=IMUResponse()
 
 class sphere:
     loopl=156
@@ -164,7 +164,8 @@ class sphere:
                 cc_message.target=target
                 cc_message.yaw=y
                 cc_pub.publish(cc_message)
-                time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
+                time.sleep(0.5)
+                #time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
         server_pub.publish("stop")
         drive_pub.publish("stop")
         self.adjust_tilt()
@@ -194,7 +195,7 @@ class sphere:
                                 error = y-target
                         else:     
                                 error = -1*(target + (360-y))
-                if error <= -5:
+                if error <= -10:
                         if command == 'w':
                                 if self.mpos<self.limit:
                                         self.right_turn(d=self.bdist)
@@ -203,7 +204,7 @@ class sphere:
                                 if self.mpos>(-1*self.limit):
                                         self.left_turn(d=self.bdist)
                                         self.mpos-=1        
-                elif error >= 5:
+                elif error >= 10:
                         if command == 'w':
                                 if self.mpos>(-1*self.limit):
                                         self.left_turn(d=self.bdist)
@@ -217,7 +218,8 @@ class sphere:
                 cc_message.target=target
                 cc_message.yaw=y
                 cc_pub.publish(cc_message)
-                time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
+                time.sleep(0.5)
+                #time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
         self.adjust_tilt()
     
     def print_to_drive(self, command):
@@ -290,9 +292,9 @@ move="Stop"
 def callback(message):
     global cc, target, move
     if message.data=="forward":
-        move="forward"
+        Sphere.cc_motion_wt_loopl(command="w", facing_target=0, user_def_target=Sphere.target)
     elif message.data=="backward":
-        move="backward"
+        Sphere.cc_motion_wt_loopl(command="s", facing_target=0, user_def_target=Sphere.target)
     elif message.data=="right":
         Sphere.right_turn()
     elif message.data=="left":
@@ -354,10 +356,4 @@ def gui_callback(message):
 server_sub = rospy.Subscriber('server', String, callback=callback)
 gui_sub = rospy.Subscriber('gui', String, gui_callback)
 
-while True:
-    if move=="forward" and cc==True:
-        Sphere.cc_motion_wt_loopl(command="w", facing_target=0, user_def_target=Sphere.target)
-    elif move=="backward" and cc==True:
-        Sphere.cc_motion_wt_loopl(command="s", facing_target=0, user_def_target=Sphere.target)
-    else:
-        pass
+rospy.spin()

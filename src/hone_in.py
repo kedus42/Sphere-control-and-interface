@@ -6,7 +6,7 @@ from std_msgs import String
 from cv_bridge import CvBridge
 import numpy as np
 
-nduckie=cv2.CascadeClassifier("../haarcascades/duckie_cascade_stage10.xml")
+nduckie=cv2.CascadeClassifier("../haarcascades/haarcascade_lowerbody.xml")
 
 rospy.init_node('honing')
 steering_pub=rospy.Publisher('server', String, queue_size=30)

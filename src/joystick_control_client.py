@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import pygame
-import rospy
+import rospy, time
 from std_msgs.msg import String
 
 rospy.init_node("client")
@@ -167,7 +167,9 @@ while running:
         elif event.type==pygame.JOYAXISMOTION:
                 if event.axis==1:
                     if event.value<=-1:
-                        server_pub.publish("forward")
+                        if cc=="On":
+                            server_pub.publish("forward")
+                        time.sleep(.1)
                         drive_pub.publish("forward")
                         send_stop=True
                     elif event.value>=-0.001 and event.value<=0:
@@ -176,7 +178,9 @@ while running:
                             drive_pub.publish("stop")
                             send_stop=False
                     elif event.value>=1:
-                        server_pub.publish("backward")
+                        if cc=="On":
+                            server_pub.publish("backward")
+                        time.sleep(.1)
                         drive_pub.publish("backward")
                         send_stop=True
                     elif event.value>=-0.001 and event.value<=0:
