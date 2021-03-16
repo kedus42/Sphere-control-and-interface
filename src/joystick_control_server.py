@@ -121,10 +121,6 @@ class sphere:
                 y ,r, p = bno.read_euler()
                 target = user_def_target+y
                 target%=360
-        if command=='w':
-            self.print_to_drive("forward")
-        else:
-            self.print_to_drive("backward")
         i=0
         self.move=True
         self.loopl=self.convert_to_loopl(self.loopl)
@@ -141,7 +137,7 @@ class sphere:
                                 error = y-target
                         else:     
                                 error = -1*(target + (360-y))
-                if error <= -5:
+                if error <= -10:
                         if command == 'w':
                                 if self.mpos<self.limit:
                                         self.right_turn(d=self.bdist)
@@ -150,7 +146,7 @@ class sphere:
                                 if self.mpos>(-1*self.limit):
                                         self.left_turn(d=self.bdist)
                                         self.mpos-=1        
-                elif error >= 5:
+                elif error >= 10:
                         if command == 'w':
                                 if self.mpos>(-1*self.limit):
                                         self.left_turn(d=self.bdist)
@@ -159,7 +155,6 @@ class sphere:
                                 if self.mpos<self.limit:
                                         self.right_turn(d=self.bdist)
                                         self.mpos+=1
-                i+=1
                 cc_message.error=error
                 cc_message.target=target
                 cc_message.yaw=y
@@ -176,11 +171,6 @@ class sphere:
         else:
                 y ,r, p = bno.read_euler()
                 target = user_def_target+y
-        #if command=='w':
-        #    self.print_to_drive("forward")
-        #else:
-        #    self.print_to_drive("backward")
-        i=0
         self.move=True
         cc_message=cc_msg()
         while (self.move):
@@ -213,7 +203,6 @@ class sphere:
                                 if self.mpos<self.limit:
                                         self.right_turn(d=self.bdist)
                                         self.mpos+=1
-                i+=1
                 cc_message.error=error
                 cc_message.target=target
                 cc_message.yaw=y
@@ -292,9 +281,9 @@ move="Stop"
 def callback(message):
     global cc, target, move
     if message.data=="forward":
-        Sphere.cc_motion_wt_loopl(command="w", facing_target=0, user_def_target=Sphere.target)
+        move="forward"
     elif message.data=="backward":
-        Sphere.cc_motion_wt_loopl(command="s", facing_target=0, user_def_target=Sphere.target)
+        move="backward"
     elif message.data=="right":
         Sphere.right_turn()
     elif message.data=="left":
@@ -356,4 +345,10 @@ def gui_callback(message):
 server_sub = rospy.Subscriber('server', String, callback=callback)
 gui_sub = rospy.Subscriber('gui', String, gui_callback)
 
-rospy.spin()
+while True:
+    if move=="forward" and cc==True:
+        Sphere.cc_motion_wt_loopl(command="w", facing_target=0, user_def_target=Sphere.target)
+    elif move=="backward" and cc==True:
+        Sphere.cc_motion_wt_loopl(command="s", facing_target=0, user_def_target=Sphere.target)
+    else:
+        pass
