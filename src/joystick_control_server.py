@@ -126,6 +126,7 @@ class sphere:
         self.loopl=self.convert_to_loopl(self.loopl)
         cc_message=cc_msg()
         while (i<self.loopl):
+                start=time.time()
                 y,r,p=bno.read_euler()
                 if y < 180:
                         if abs(y-target) < y+abs(360-target):
@@ -159,7 +160,9 @@ class sphere:
                 cc_message.target=target
                 cc_message.yaw=y
                 cc_pub.publish(cc_message)
-                time.sleep(0.5)
+                end=time.time()
+                dt=end-start
+                time.sleep(0.5-dt)
                 #time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
         server_pub.publish("stop")
         drive_pub.publish("stop")
@@ -174,6 +177,7 @@ class sphere:
         self.move=True
         cc_message=cc_msg()
         while (self.move):
+                start=time.time()
                 y,r,p=bno.read_euler()
                 if y < 180:
                         if abs(y-target) < y+abs(360-target):
@@ -207,7 +211,9 @@ class sphere:
                 cc_message.target=target
                 cc_message.yaw=y
                 cc_pub.publish(cc_message)
-                time.sleep(0.5)
+                end=time.time()
+                dt=end-start
+                time.sleep(0.5-dt)
                 #time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
         self.adjust_tilt()
     
