@@ -104,7 +104,7 @@ dc_text = font.render('  Duty cycle: '+str(Sphere.duty_cycle)+'  ', True, (0,0,0
 dcRect = dc_text.get_rect()
 dcRect.center = (95, 300)
 
-controls = pygame.image.load('/home/kedus/Workspace/catkin_ws/src/sphere_control/src/joystick.png')
+controls = pygame.image.load('/home/kedus/Workspace/catkin_ws/src/sphere_control/src/utils/joystick.png')
 
 send_stop=False
 
