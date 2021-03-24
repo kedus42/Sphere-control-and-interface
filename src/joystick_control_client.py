@@ -169,7 +169,7 @@ while running:
                     if event.value<=-1:
                         if cc=="On":
                             server_pub.publish("forward")
-                        time.sleep(.1)
+                        rospy.sleep(.1)
                         drive_pub.publish("forward")
                         send_stop=True
                     elif event.value>=-0.001 and event.value<=0:
@@ -180,7 +180,7 @@ while running:
                     elif event.value>=1:
                         if cc=="On":
                             server_pub.publish("backward")
-                        time.sleep(.1)
+                        rospy.sleep(.1)
                         drive_pub.publish("backward")
                         send_stop=True
                     elif event.value>=-0.001 and event.value<=0:
