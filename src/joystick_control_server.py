@@ -72,7 +72,7 @@ class sphere:
         GPIO.output(M4_CCW, GPIO.HIGH)
         GPIO.output(M4_CW, GPIO.LOW)
         GPIO.output(PWM4, GPIO.HIGH)
-        time.sleep(float((float(d)*float(k))/float(1000)))
+        rospy.sleep(float((float(d)*float(k))/float(1000)))
         GPIO.output(M3_CW, GPIO.LOW)
         GPIO.output(M3_CCW, GPIO.LOW)
         GPIO.output(PWM3, GPIO.LOW)
@@ -87,7 +87,7 @@ class sphere:
         GPIO.output(M3_CCW, GPIO.HIGH)
         GPIO.output(M3_CW, GPIO.LOW)
         GPIO.output(PWM3, GPIO.HIGH)
-        time.sleep(float((float(d)*float(k))/float(1000)))
+        rospy.sleep(float((float(d)*float(k))/float(1000)))
         GPIO.output(M4_CW, GPIO.LOW)
         GPIO.output(M4_CCW, GPIO.LOW)
         GPIO.output(PWM4, GPIO.LOW)
@@ -107,7 +107,7 @@ class sphere:
             else:
                 break
             i+=1
-            time.sleep(1)
+            rospy.sleep(1)
         self.mpos=0
         rospy.loginfo("Finished.")
 
@@ -125,8 +125,9 @@ class sphere:
         self.move=True
         self.loopl=self.convert_to_loopl(self.loopl)
         cc_message=cc_msg()
+        rate=rospy.Rate(2)
         while (i<self.loopl):
-                start=time.time()
+                #start=time.time()
                 y,r,p=bno.read_euler()
                 if y < 180:
                         if abs(y-target) < y+abs(360-target):
@@ -160,9 +161,11 @@ class sphere:
                 cc_message.target=target
                 cc_message.yaw=y
                 cc_pub.publish(cc_message)
-                end=time.time()
-                dt=end-start
-                time.sleep(0.5-dt)
+                i+=1
+                rate.sleep()
+                #end=time.time()
+                #dt=end-start
+                #time.sleep(0.5-dt)
                 #time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
         server_pub.publish("stop")
         drive_pub.publish("stop")
@@ -176,45 +179,47 @@ class sphere:
                 target = user_def_target+y
         self.move=True
         cc_message=cc_msg()
+        rate = rospy.Rate(2)
         while (self.move):
-                start=time.time()
-                y,r,p=bno.read_euler()
-                if y < 180:
-                        if abs(y-target) < y+abs(360-target):
-                                error = y-target
-                        else:
-                                error = y+(360-target)
+            #start=time.time()
+            y,r,p=bno.read_euler()
+            if y < 180:
+                if abs(y-target) < y+abs(360-target):
+                    error = y-target
                 else:
-                        if abs(y-target) < target+abs(360-y):
-                                error = y-target
-                        else:     
-                                error = -1*(target + (360-y))
+                    error = y+(360-target)
+                else:
+                    if abs(y-target) < target+abs(360-y):
+                        error = y-target
+                    else:     
+                        error = -1*(target + (360-y))
                 if error <= -10:
-                        if command == 'w':
-                                if self.mpos<self.limit:
-                                        self.right_turn(d=self.bdist)
-                                        self.mpos+=1
-                        else:
-                                if self.mpos>(-1*self.limit):
-                                        self.left_turn(d=self.bdist)
-                                        self.mpos-=1        
+                    if command == 'w':
+                        if self.mpos<self.limit:
+                            self.right_turn(d=self.bdist)
+                            self.mpos+=1
+                    else:
+                        if self.mpos>(-1*self.limit):
+                            self.left_turn(d=self.bdist)
+                            self.mpos-=1        
                 elif error >= 10:
-                        if command == 'w':
-                                if self.mpos>(-1*self.limit):
-                                        self.left_turn(d=self.bdist)
-                                        self.mpos-=1
-                        else:
-                                if self.mpos<self.limit:
-                                        self.right_turn(d=self.bdist)
-                                        self.mpos+=1
-                cc_message.error=error
-                cc_message.target=target
-                cc_message.yaw=y
-                cc_pub.publish(cc_message)
-                end=time.time()
-                dt=end-start
-                time.sleep(0.5-dt)
-                #time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
+                    if command == 'w':
+                        if self.mpos>(-1*self.limit):
+                            self.left_turn(d=self.bdist)
+                            self.mpos-=1
+                    else:
+                        if self.mpos<self.limit:
+                            self.right_turn(d=self.bdist)
+                            self.mpos+=1
+            cc_message.error=error
+            cc_message.target=target
+            cc_message.yaw=y
+            cc_pub.publish(cc_message)
+            rate.sleep()
+            #end=time.time()
+            #dt=end-start
+            #time.sleep(0.5-dt)
+            #time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
         self.adjust_tilt()
     
     def print_to_drive(self, command):
