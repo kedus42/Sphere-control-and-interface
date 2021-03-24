@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-import pygame
-import rospy, time
+import rospy, time,os
 from std_msgs.msg import String
+
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+import pygame
 
 rospy.init_node("client")
 

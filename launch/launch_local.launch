@@ -8,8 +8,8 @@
   <param name="cc" type="bool" value="True" />
 
   <node name="client" pkg="sphere_control" type="joystick_control_client.py" output="screen"/>
-  <group if "$(eval arg('follow') == 'yes')">
-    <node name="homing" pkg="sphere_cotnrol" type="home_in.py" output="screen"/>
+  <group if="$(eval arg('follow') == 'yes')">
+    <node name="homing" pkg="sphere_control" type="home_in.py" output="screen"/>
   </group>
   <!--node name="gui" pkg="sphere_control" type="sphere_gui.py" output="screen"/-->
 </launch>
