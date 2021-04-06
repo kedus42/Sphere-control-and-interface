@@ -16,5 +16,5 @@ def callback(req):
 
 server = rospy.Service('imu_server', IMU, callback)
 rospy.loginfo("imu service up")
-while True:
+while True and not rospy.is_shutdown():
     rospy.spin()

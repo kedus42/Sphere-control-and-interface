@@ -356,7 +356,7 @@ def gui_callback(message):
 server_sub = rospy.Subscriber('server', String, callback=callback)
 gui_sub = rospy.Subscriber('gui', String, gui_callback)
 
-while True:
+while True and not rospy.is_shutdown():
     if move=="forward" and cc==True:
         Sphere.cc_motion_wt_loopl(command="w", facing_target=0, user_def_target=Sphere.target)
     elif move=="backward" and cc==True:

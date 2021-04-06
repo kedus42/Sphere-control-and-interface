@@ -181,7 +181,7 @@ def callback(message):
 
 driver_sub=rospy.Subscriber('drive', String, callback=callback)
 
-while True:
+while True and not rospy.is_shutdown():
     if move=="forward":
         Sphere.base_motion(command="forward")
     elif move=="backward":
