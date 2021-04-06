@@ -3,7 +3,7 @@ import time, math
 import RPi.GPIO as GPIO
 import rospy
 from std_msgs.msg import String
-from sphere_control.msg import cc_msg
+from sphere_control.msg import cc_msg, drive_msg
 #from sphere_control.srv import IMU, IMUResponse
 from Adafruit_BNO055 import BNO055
 
@@ -353,8 +353,15 @@ def gui_callback(message):
                 num=""
         Sphere.set_direction_dist(0, di[0])
 
+def controllerCallback(command):
+    if command.steer==-1:
+        Sphere.left_turn(d=command.steer_dist)
+    elif command.steer==1:
+        Sphere.right_turn(d=command.steer_dist)
+
 server_sub = rospy.Subscriber('server', String, callback=callback)
 gui_sub = rospy.Subscriber('gui', String, gui_callback)
+controller_sub = rospy.Subscriber('controller', drive_msg, controllerCallback)
 
 while True and not rospy.is_shutdown():
     if move=="forward" and cc==True:

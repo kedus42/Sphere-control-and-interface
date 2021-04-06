@@ -110,6 +110,12 @@ controls = pygame.image.load('/home/kedus/Workspace/catkin_ws/src/sphere_control
 
 send_stop=False
 
+def controllerCallback(command):
+    if command.duty_cycle>0:
+        Sphere.duty_cycle=command.duty_cycle
+        
+controller_sub=rospy.Subscriber('controller', drive_msg, controllerCallback)
+
 while running:
     cc_text = font.render('  Course correction: '+str(cc)+'  ', True, (0,0,0), (255,255,255))
     target_text = font.render('  Target: '+str(Sphere.target)+'  ', True, (0,0,0), (255,255,255))

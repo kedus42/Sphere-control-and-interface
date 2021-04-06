@@ -3,6 +3,7 @@ import time, os, math
 import RPi.GPIO as GPIO
 import rospy
 from std_msgs.msg import String
+from sphere_control.msg import drive_msg
 
 M12_CW=21
 M12_CCW=20
@@ -179,7 +180,16 @@ def callback(message):
     elif message.data=="mdelaydown":
         Sphere.decrease_mdelay()
 
+def controllerCallback(command):
+    if command.steer==1:
+        move="forward"
+        Sphere.duty_cycle=command.duty_cycle
+    elif command.steer==-1:
+        move="backward"
+        Sphere.duty_cycle=command.duty_cycle
+
 driver_sub=rospy.Subscriber('drive', String, callback=callback)
+controller_sub=rospy.Subscriber('controller', drive_msg, controllerCallback)
 
 while True and not rospy.is_shutdown():
     if move=="forward":
