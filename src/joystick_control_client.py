@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rospy, time,os
 from std_msgs.msg import String
+from sphere_control.msg import drive_msg
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
@@ -113,7 +114,7 @@ send_stop=False
 def controllerCallback(command):
     if command.duty_cycle>0:
         Sphere.duty_cycle=command.duty_cycle
-        
+
 controller_sub=rospy.Subscriber('controller', drive_msg, controllerCallback)
 
 while running:

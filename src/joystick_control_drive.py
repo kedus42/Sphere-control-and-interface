@@ -187,6 +187,9 @@ def controllerCallback(command):
     elif command.steer==-1:
         move="backward"
         Sphere.duty_cycle=command.duty_cycle
+    elif command.steer==0:
+        Sphere.stop()
+        move="stop"
 
 driver_sub=rospy.Subscriber('drive', String, callback=callback)
 controller_sub=rospy.Subscriber('controller', drive_msg, controllerCallback)

@@ -6,22 +6,24 @@ from cv_bridge import CvBridge
 from sphere_control.msg import drive_msg
 import numpy as np
 
-steering_pub=rospy.Publisher('server', String, queue_size=30)
-drive_pub=rospy.Publisher('drive', String, queue_size=30)
+rospy.init_node("home_in")
+controller_pub=rospy.Publisher("/controller", drive_msg, queue_size=30)
+
 command=drive_msg()
 command.duty_cycle=30
 
 def callback(timer_info):
+    global command
     direction=rospy.get_param("/ooi")
+    command.dir=0
     if direction == "left":
-        steering_pub.publish("left")
-        drive_pub.publish("forward")
+        command.dir=1
+        command.steer=-1
         rospy.set_param("/ooi", "missing")
     elif direction == "right":
-        steering_pub.publish("right")
-        drive_pub.publish("forward")
+        command.dir=1
+        command.steer=1
         rospy.set_param("/ooi", "missing")
-    else:
-        drive_pub.publish("stop")
+    controller_pub.publish(command)
 
 timer=rospy.Timer(rospy.Duration(.5), callback)

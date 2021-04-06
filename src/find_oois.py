@@ -4,6 +4,7 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import String
 from cv_bridge import CvBridge
 import numpy as np
+from sphere_control.msg import drive_msg
 
 noois=cv2.CascadeClassifier("../haarcascades/haarcascade_lowerbody.xml")
 
@@ -14,6 +15,8 @@ move_threshold=int(camwidth*.8)
 ooi_duration=0
 duration_threshhold=30
 bridge=CvBridge()
+
+controller_pub=rospy.Publisher("/controller", drive_msg, queue_size=30)
 
 def callback(image):
     global ooi_duratioin
