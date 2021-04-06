@@ -16,8 +16,6 @@ ooi_duration=0
 duration_threshhold=30
 bridge=CvBridge()
 
-controller_pub=rospy.Publisher("/controller", drive_msg, queue_size=30)
-
 def callback(image):
     global ooi_duratioin
     img=bridge.imgmsg_to_cv2(image, 'rgb8')
