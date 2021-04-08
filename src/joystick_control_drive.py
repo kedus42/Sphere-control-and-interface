@@ -181,6 +181,7 @@ def callback(message):
         Sphere.decrease_mdelay()
 
 def controllerCallback(command):
+    global move
     if command.dir==1:
         move="forward"
         Sphere.duty_cycle=command.duty_cycle
