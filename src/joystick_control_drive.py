@@ -54,7 +54,7 @@ class sphere:
     def base_motion(self, command="forward"):
         self.move=True
         if command=="forward":
-            while self.move:
+            while self.move and not rospy.is_shutdown():
                 GPIO.output(M12_CW, GPIO.HIGH)
                 GPIO.output(M12_CCW, GPIO.LOW)
                 self.pwm_pin.ChangeDutyCycle(self.duty_cycle)
@@ -72,7 +72,7 @@ class sphere:
             GPIO.output(M12_CCW, GPIO.LOW)
             self.pwm_pin.ChangeDutyCycle(0)
         else:
-            while self.move:
+            while self.move and not rospy.is_shutdown():
                 GPIO.output(M12_CCW, GPIO.HIGH)
                 GPIO.output(M12_CW, GPIO.LOW)
                 self.pwm_pin.ChangeDutyCycle(self.duty_cycle)

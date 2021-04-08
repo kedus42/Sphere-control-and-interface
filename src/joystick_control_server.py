@@ -98,7 +98,7 @@ class sphere:
     def adjust_tilt(self, target=0):
         rospy.loginfo("Adjusting tilt...")
         i=0
-        while (i<10):
+        while (i<10) and not rospy.is_shutdown():
             y, r, p = bno.read_euler()
             if r > target+5:
                 self.left_turn(d=self.sdist)
@@ -126,7 +126,7 @@ class sphere:
         self.loopl=self.convert_to_loopl(self.loopl)
         cc_message=cc_msg()
         rate=rospy.Rate(2)
-        while (i<self.loopl):
+        while (i<self.loopl) and not rospy.is_shutdown():
                 #start=time.time()
                 y,r,p=bno.read_euler()
                 if y < 180:
@@ -180,7 +180,7 @@ class sphere:
         self.move=True
         cc_message=cc_msg()
         rate = rospy.Rate(2)
-        while (self.move):
+        while (self.move) and not rospy.is_shutdown():
             #start=time.time()
             y,r,p=bno.read_euler()
             if y < 180:
