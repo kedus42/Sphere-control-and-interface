@@ -188,29 +188,29 @@ class sphere:
                     error = y-target
                 else:
                     error = y+(360-target)
-                else:
-                    if abs(y-target) < target+abs(360-y):
-                        error = y-target
-                    else:     
+            else:
+                if abs(y-target) < target+abs(360-y):
+                    error = y-target
+                else:     
                         error = -1*(target + (360-y))
-                if error <= -10:
-                    if command == 'w':
-                        if self.mpos<self.limit:
-                            self.right_turn(d=self.bdist)
-                            self.mpos+=1
-                    else:
-                        if self.mpos>(-1*self.limit):
-                            self.left_turn(d=self.bdist)
-                            self.mpos-=1        
-                elif error >= 10:
-                    if command == 'w':
-                        if self.mpos>(-1*self.limit):
-                            self.left_turn(d=self.bdist)
-                            self.mpos-=1
-                    else:
-                        if self.mpos<self.limit:
-                            self.right_turn(d=self.bdist)
-                            self.mpos+=1
+            if error <= -10:
+                if command == 'w':
+                    if self.mpos<self.limit:
+                        self.right_turn(d=self.bdist)
+                        self.mpos+=1
+                else:
+                    if self.mpos>(-1*self.limit):
+                        self.left_turn(d=self.bdist)
+                        self.mpos-=1        
+            elif error >= 10:
+                if command == 'w':
+                    if self.mpos>(-1*self.limit):
+                        self.left_turn(d=self.bdist)
+                        self.mpos-=1
+                else:
+                    if self.mpos<self.limit:
+                        self.right_turn(d=self.bdist)
+                        self.mpos+=1
             cc_message.error=error
             cc_message.target=target
             cc_message.yaw=y
