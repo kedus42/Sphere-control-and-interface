@@ -181,13 +181,13 @@ def callback(message):
         Sphere.decrease_mdelay()
 
 def controllerCallback(command):
-    if command.steer==1:
+    if command.dir==1:
         move="forward"
         Sphere.duty_cycle=command.duty_cycle
-    elif command.steer==-1:
+    elif command.dir==-1:
         move="backward"
         Sphere.duty_cycle=command.duty_cycle
-    elif command.steer==0:
+    elif command.dir==0:
         Sphere.stop()
         move="stop"
 
