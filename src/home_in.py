@@ -8,6 +8,7 @@ import numpy as np
 
 rospy.init_node("home_in")
 controller_pub=rospy.Publisher("/controller", drive_msg, queue_size=30)
+steer_dist=25
 
 command=drive_msg()
 command.duty_cycle=30
@@ -19,11 +20,14 @@ def callback(timer_info):
     if direction == "left":
         command.dir=1
         command.steer=-1
+        command.steer_dist=steer_dist
         rospy.set_param("/ooi", "missing")
     elif direction == "right":
         command.dir=1
         command.steer=1
+        command.steer_dist=steer_dist
         rospy.set_param("/ooi", "missing")
     controller_pub.publish(command)
 
-timer=rospy.Timer(rospy.Duration(.5), callback)
+timer=rospy.Timer(rospy.Duration((float(10*steer_dist))/1000.0), callback)
+rospy.spin()

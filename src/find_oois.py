@@ -12,29 +12,27 @@ rospy.init_node('find_oois')
 camwidth=640
 camheight=480
 move_threshold=int(camwidth*.8)
-ooi_duration=0
-duration_threshhold=30
+steer_dist=25
+
 bridge=CvBridge()
 
 def callback(image):
-    global ooi_duratioin
+    img=rospy.wait_for_message("raspicam_node/image_raw", Image)
     img=bridge.imgmsg_to_cv2(image, 'rgb8')
-    oois=noois.detectMultiScale(img, 1.1, 4)
+    oois=noois.detectMultiScale(img, 1.05, 3)
     count=0
     for x,y,w,h in oois:
         cv2.rectangle(img, (x,y), (x+w, y+h), (0, 255, 0), 1)
         cv2.imshow("found this ooi", img)
-        if x+w/2 < int((camwidth/2)-camwidth/10):
-            ooi_duratioin+=1
-            if ooi_duration>duration_threshhold:
+        if w<move_threshold:
+            if x+w/2 < int((camwidth/2)-camwidth/10):
                 rospy.set_param("/ooi", "left")
-        elif x+w/2 > int((camwidth/2)+camwidth/10):
-            ooi_duration-=1
-            if ooi_duratioin<-1*duration_threshhold:
+            elif x+w/2 > int((camwidth/2)+camwidth/10):
                 rospy.set_param("/ooi", "right")
         count+=1
         if count==1:
             break
-    
-rospy.Subscriber("raspicam_node/image_raw", Image, callback=callback)
+
+timer=rospy.Timer(rospy.Duration(float(2*steer_dist)/1000.0), callback)   
+#rospy.Subscriber("raspicam_node/image_raw", Image, callback=callback)
 rospy.spin()
