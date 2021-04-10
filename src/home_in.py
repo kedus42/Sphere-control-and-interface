@@ -3,31 +3,45 @@ import rospy, cv2
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
 from cv_bridge import CvBridge
-from sphere_control.msg import drive_msg
 import numpy as np
+from sphere_control.msg import drive_msg
 
-rospy.init_node("home_in")
-controller_pub=rospy.Publisher("/controller", drive_msg, queue_size=30)
+noois=cv2.CascadeClassifier("../haarcascades/haarcascade_lowerbody.xml")
+
+rospy.init_node('home_in')
+camwidth=640
+camheight=480
+move_threshold=int(camwidth*.8)
 steer_dist=25
 
-command=drive_msg()
-command.duty_cycle=30
+bridge=CvBridge()
+steering_pub=rospy.Publisher('controller', drive_msg, queue_size=3)
 
-def callback(timer_info):
-    global command
-    direction=rospy.get_param("/ooi")
-    command.dir=0
-    if direction == "left":
-        command.dir=1
-        command.steer=-1
-        command.steer_dist=steer_dist
-        rospy.set_param("/ooi", "missing")
-    elif direction == "right":
-        command.dir=1
-        command.steer=1
-        command.steer_dist=steer_dist
-        rospy.set_param("/ooi", "missing")
-    controller_pub.publish(command)
+camera=picamera.PiCamera()
+camera.vflip=True
 
-timer=rospy.Timer(rospy.Duration((float(10*steer_dist))/1000.0), callback)
+def callback(image):
+    command=drive_msg()
+    camera.capture('latest.jpg')
+    img = cv2.imread('latest.jpg')
+    oois=noois.detectMultiScale(img, 1.05, 3)
+    count=0
+    for x,y,w,h in oois:
+        cv2.rectangle(img, (x,y), (x+w, y+h), (0, 255, 0), 1)
+        cv2.imshow("found this ooi", img)
+        if w<move_threshold:
+            command.dir=1
+            command.steer_dist=steer_dist
+            command.duty_cycle=30
+            if x+w/2 < int((camwidth/2)-camwidth/10):
+                command.steer=-1
+            elif x+w/2 > int((camwidth/2)+camwidth/10):
+                command.steer=1
+        count+=1
+        if count==1:
+            break
+    steering_pub.publish(command)
+
+timer=rospy.Timer(rospy.Duration(0.5), callback)
+#rospy.Subscriber("raspicam_node/image_raw", Image, callback=callback)
 rospy.spin()
