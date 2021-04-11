@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 import rospy, cv2
 from std_msgs.msg import String
-from cv_bridge import CvBridge
+#from cv_bridge import CvBridge
 import numpy as np
 from sphere_control.msg import drive_msg
 
@@ -13,7 +13,7 @@ camheight=480
 move_threshold=int(camwidth*.8)
 steer_dist=25
 
-bridge=CvBridge()
+#bridge=CvBridge()
 steering_pub=rospy.Publisher('controller', drive_msg, queue_size=3)
 
 camera=picamera.PiCamera()
