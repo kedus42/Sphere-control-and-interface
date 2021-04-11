@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2.7
 import rospy, cv2
 from std_msgs.msg import String
 from cv_bridge import CvBridge
