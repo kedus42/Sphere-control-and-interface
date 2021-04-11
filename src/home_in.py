@@ -41,6 +41,7 @@ def callback(image):
         if count==1:
             break
     cv2.imshow("sphere cam at "+ str(fps)+" fps", img)
+    cv2.imwrite("detected imgs.jpg", img)
     steering_pub.publish(command)
 
 timer=rospy.Timer(rospy.Duration(1.0/fps), callback)
