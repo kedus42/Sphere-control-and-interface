@@ -5,7 +5,9 @@
   <node name="server" pkg="sphere_control" type="joystick_control_server.py" output="screen"/>
   <node name="driver" pkg="sphere_control" type="joystick_control_drive.py" output="screen"/>
   <group if="$(eval arg('follow') == 'yes')">
-    <include file="$(find raspicam_node)/launch/camera_module_v2_640x480_30fps.launch"/>
-    <node pkg="rosservice" type="rosservice" name="camera_startup" args="call --wait /raspicam_node/start_capture" />
+    <!--include file="$(find raspicam_node)/launch/camera_module_v2_640x480_30fps.launch"/-->
+    <!--node pkg="rosservice" type="rosservice" name="camera_startup" args="call wait /raspicam_node/start_capture" /-->
+    <node name="home_in" pkg="sphere_control" type="home_in.py" output="screen"/>
+
   </group>
 </launch>

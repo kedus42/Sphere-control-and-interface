@@ -12,7 +12,7 @@
     <node name="client" pkg="sphere_control" type="joystick_control_client.py" output="screen"/>
   </group>
   <group if="$(eval arg('follow') == 'yes')">
-    <node name="home_in" pkg="sphere_control" type="home_in.py" output="screen"/>
+    <!--node name="home_in" pkg="sphere_control" type="home_in.py" output="screen"/-->
   </group>
   <!--node name="gui" pkg="sphere_control" type="sphere_gui.py" output="screen"/-->
 </launch>
