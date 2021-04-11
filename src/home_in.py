@@ -9,8 +9,8 @@ import picamera
 noois=cv2.CascadeClassifier("../../haarcascades/haarcascade_lowerbody.xml")
 
 rospy.init_node('home_in')
-camwidth=640
-camheight=480
+camwidth=1920
+camheight=1080
 move_threshold=int(camwidth*.8)
 steer_dist=25
 
