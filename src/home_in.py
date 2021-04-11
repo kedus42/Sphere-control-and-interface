@@ -4,6 +4,7 @@ from std_msgs.msg import String
 #from cv_bridge import CvBridge
 import numpy as np
 from sphere_control.msg import drive_msg
+import picamera
 
 noois=cv2.CascadeClassifier("../haarcascades/haarcascade_lowerbody.xml")
 
