@@ -23,8 +23,8 @@ fps=2.0
 
 def callback(image):
     command=drive_msg()
-    camera.capture('~/latest.jpg')
-    img = cv2.imread('~/latest.jpg')
+    camera.capture('latest.jpg')
+    img = cv2.imread('latest.jpg')
     oois=noois.detectMultiScale(img, 1.05, 3)
     count=0
     for x,y,w,h in oois:
