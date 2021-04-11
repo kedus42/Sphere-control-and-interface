@@ -19,6 +19,7 @@ steering_pub=rospy.Publisher('controller', drive_msg, queue_size=3)
 
 camera=picamera.PiCamera()
 camera.vflip=True
+camera.hflip=True
 fps=2.0
 
 def callback(image):
@@ -33,7 +34,7 @@ def callback(image):
             command.dir=1
             command.steer_dist=steer_dist
             command.duty_cycle=30
-            if x+w/2 < int((camwidth/2)-camwidth/10):
+            if x-w/2 < int((camwidth/2)-camwidth/10):
                 command.steer=-1
             elif x+w/2 > int((camwidth/2)+camwidth/10):
                 command.steer=1
