@@ -20,12 +20,9 @@ bno = BNO055.BNO055(serial_port='/dev/ttyAMA0', rst=18)
 bno.begin()
 
 rospy.init_node("server")
-#rospy.wait_for_service('imu_server')
 server_pub = rospy.Publisher('server', String, queue_size=5)
 drive_pub = rospy.Publisher('drive', String, queue_size=5)
 cc_pub = rospy.Publisher('cc', cc_msg, queue_size=5)
-#imu_client = rospy.ServiceProxy('imu_server', IMU)
-#resp=IMUResponse()
 
 class sphere:
     loopl=156
@@ -41,6 +38,7 @@ class sphere:
     k1=12.92254
     k2=-0.57392
     k3=33.42389
+    steer_pos=3
 
     def __init__(self):
         self.loopl=156
@@ -56,6 +54,7 @@ class sphere:
         self.k1=12.92254
         self.k2=-0.57392
         self.k3=33.42389
+        self.steer_pos=4
         
         GPIO.setmode(GPIO.BCM)   
         GPIO.setup(M3_CW, GPIO.OUT)
@@ -79,6 +78,7 @@ class sphere:
         GPIO.output(M4_CW, GPIO.LOW)
         GPIO.output(M4_CCW, GPIO.LOW)
         GPIO.output(PWM4, GPIO.LOW)
+        self.mpos+=k
     
     def left_turn(self, k=1, d=sdist):
         GPIO.output(M4_CW, GPIO.HIGH)
@@ -94,6 +94,13 @@ class sphere:
         GPIO.output(M3_CW, GPIO.LOW)
         GPIO.output(M3_CCW, GPIO.LOW)
         GPIO.output(PWM3, GPIO.LOW)
+        self.mpos-=k
+
+    def steer_right(multiplier=1, base_dist=sdist):
+        self.right_turn(k=multiplier*(steer_pos-mpos), d=base_dist)
+
+    def steer_left(multiplier=1, base_dist=sdist):
+        self.left_turn(k=multiplier*abs(-1*steer_pos-mpos), d=base_dist)
 
     def adjust_tilt(self, target=0):
         rospy.loginfo("Adjusting tilt...")
@@ -127,7 +134,6 @@ class sphere:
         cc_message=cc_msg()
         rate=rospy.Rate(2)
         while (i<self.loopl) and not rospy.is_shutdown():
-                #start=time.time()
                 y,r,p=bno.read_euler()
                 if y < 180:
                         if abs(y-target) < y+abs(360-target):
@@ -141,31 +147,20 @@ class sphere:
                                 error = -1*(target + (360-y))
                 if error <= -10:
                         if command == 'w':
-                                if self.mpos<self.limit:
-                                        self.right_turn(d=self.bdist)
-                                        self.mpos+=1
+                            self.steer_right(1)
                         else:
-                                if self.mpos>(-1*self.limit):
-                                        self.left_turn(d=self.bdist)
-                                        self.mpos-=1        
+                            self.steer_left(1)     
                 elif error >= 10:
                         if command == 'w':
-                                if self.mpos>(-1*self.limit):
-                                        self.left_turn(d=self.bdist)
-                                        self.mpos-=1
+                            self.steer_left(1)
                         else:
-                                if self.mpos<self.limit:
-                                        self.right_turn(d=self.bdist)
-                                        self.mpos+=1
+                            self.steer_right(1)
                 cc_message.error=error
                 cc_message.target=target
                 cc_message.yaw=y
                 cc_pub.publish(cc_message)
                 i+=1
                 rate.sleep()
-                #end=time.time()
-                #dt=end-start
-                #time.sleep(0.5-dt)
                 #time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
         server_pub.publish("stop")
         drive_pub.publish("stop")
@@ -181,7 +176,6 @@ class sphere:
         cc_message=cc_msg()
         rate = rospy.Rate(2)
         while (self.move) and not rospy.is_shutdown():
-            #start=time.time()
             y,r,p=bno.read_euler()
             if y < 180:
                 if abs(y-target) < y+abs(360-target):
@@ -192,33 +186,22 @@ class sphere:
                 if abs(y-target) < target+abs(360-y):
                     error = y-target
                 else:     
-                        error = -1*(target + (360-y))
+                    error = -1*(target + (360-y))
             if error <= -10:
                 if command == 'w':
-                    if self.mpos<self.limit:
-                        self.right_turn(d=self.bdist)
-                        self.mpos+=1
+                    self.steer_right(1)
                 else:
-                    if self.mpos>(-1*self.limit):
-                        self.left_turn(d=self.bdist)
-                        self.mpos-=1        
+                    self.steer_left(1)      
             elif error >= 10:
                 if command == 'w':
-                    if self.mpos>(-1*self.limit):
-                        self.left_turn(d=self.bdist)
-                        self.mpos-=1
+                    self.steer_left(1)
                 else:
-                    if self.mpos<self.limit:
-                        self.right_turn(d=self.bdist)
-                        self.mpos+=1
+                    self.steer_right(1)
             cc_message.error=error
             cc_message.target=target
             cc_message.yaw=y
             cc_pub.publish(cc_message)
             rate.sleep()
-            #end=time.time()
-            #dt=end-start
-            #time.sleep(0.5-dt)
             #time.sleep((float(float((float(2)*float(self.mdelay))/float(1000)))-float(float(self.bdist)/float(1000))))
         self.adjust_tilt()
     
@@ -355,9 +338,9 @@ def gui_callback(message):
 
 def controllerCallback(command):
     if command.steer==-1:
-        Sphere.left_turn(d=command.steer_dist)
+        Sphere.steer_left(multiplier=1, d=command.steer_dist)
     elif command.steer==1:
-        Sphere.right_turn(d=command.steer_dist)
+        Sphere.steer_right(multiplier=1, d=command.steer_dist)
 
 server_sub = rospy.Subscriber('server', String, callback=callback)
 gui_sub = rospy.Subscriber('gui', String, gui_callback)
