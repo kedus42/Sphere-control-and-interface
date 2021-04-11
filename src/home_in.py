@@ -18,6 +18,7 @@ steering_pub=rospy.Publisher('controller', drive_msg, queue_size=3)
 
 camera=picamera.PiCamera()
 camera.vflip=True
+fps=2.0
 
 def callback(image):
     command=drive_msg()
@@ -27,7 +28,6 @@ def callback(image):
     count=0
     for x,y,w,h in oois:
         cv2.rectangle(img, (x,y), (x+w, y+h), (0, 255, 0), 1)
-        cv2.imshow("found this ooi", img)
         if w<move_threshold:
             command.dir=1
             command.steer_dist=steer_dist
@@ -39,8 +39,9 @@ def callback(image):
         count+=1
         if count==1:
             break
+    cv2.imshow("sphere cam at "+ str(fps)+" fps", img)
     steering_pub.publish(command)
 
-timer=rospy.Timer(rospy.Duration(0.5), callback)
+timer=rospy.Timer(rospy.Duration(1.0/fps), callback)
 #rospy.Subscriber("raspicam_node/image_raw", Image, callback=callback)
 rospy.spin()
