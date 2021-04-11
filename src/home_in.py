@@ -34,10 +34,12 @@ def callback(image):
             command.dir=1
             command.steer_dist=steer_dist
             command.duty_cycle=30
-            if x-w/2 < int((camwidth/2)-camwidth/10):
+            if x+w/2 < int((camwidth/2)-camwidth/10):
                 command.steer=-1
             elif x+w/2 > int((camwidth/2)+camwidth/10):
                 command.steer=1
+            else:
+                command.steer=0
         count+=1
         if count==1:
             break
