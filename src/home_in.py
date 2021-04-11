@@ -6,7 +6,7 @@ import numpy as np
 from sphere_control.msg import drive_msg
 import picamera
 
-noois=cv2.CascadeClassifier("../haarcascades/haarcascade_lowerbody.xml")
+noois=cv2.CascadeClassifier("~ros_catkin_ws/src/sphere_control/haarcascades/haarcascade_lowerbody.xml")
 
 rospy.init_node('home_in')
 camwidth=640
