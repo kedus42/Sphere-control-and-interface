@@ -25,7 +25,7 @@ def callback(image):
     command=drive_msg()
     camera.capture('latest.jpg')
     img = cv2.imread('latest.jpg')
-    oois=noois.detectMultiScale(img, 1.1, 3)
+    oois=noois.detectMultiScale(img, 1.3, 3)
     count=0
     for x,y,w,h in oois:
         cv2.rectangle(img, (x,y), (x+w, y+h), (0, 255, 0), 1)
