@@ -5,6 +5,7 @@ from std_msgs.msg import String
 import numpy as np
 from sphere_control.msg import drive_msg
 import picamera
+from picamera.array import PiRGBArray
 
 noois=cv2.CascadeClassifier("home/pi/ros_catkin_ws/src/sphere_control/haarcascades/haarcascade_lowerbody.xml")
 
@@ -19,6 +20,7 @@ steer_dist=25
 steering_pub=rospy.Publisher('controller', drive_msg, queue_size=3)
 
 camera=picamera.PiCamera()
+rawCapture = PiRGBArray(camera)
 camera.resolution=(1280*720)
 camera.vflip=True
 camera.hflip=True
@@ -30,6 +32,8 @@ def callback(image):
     command=drive_msg()
     camera.capture('latest.jpg')
     img = cv2.imread('latest.jpg')
+    #camera.capture(rawCapture, format="bgr")
+    #img = rawCapture.array
     oois=noois.detectMultiScale(img, 1.1, 0)
     count=0
     for x,y,w,h in oois:
