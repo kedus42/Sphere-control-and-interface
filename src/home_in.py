@@ -7,7 +7,7 @@ from sphere_control.msg import drive_msg
 import picamera
 from picamera.array import PiRGBArray
 
-noois=cv2.CascadeClassifier("home/pi/ros_catkin_ws/src/sphere_control/haarcascades/haarcascade_lowerbody.xml")
+noois=cv2.CascadeClassifier("/home/pi/ros_catkin_ws/src/sphere_control/haarcascades/haarcascade_lowerbody.xml")
 
 rospy.init_node('home_in')
 camwidth=1920
