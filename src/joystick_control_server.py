@@ -346,7 +346,7 @@ def controllerCallback(command):
         Sphere.steer_left(multiplier=1, base_dist=command.steer_dist)
     elif command.steer==1:
         Sphere.steer_right(multiplier=1, base_dist=command.steer_dist)
-    elif command.steer=0:
+    elif command.steer==0:
         Sphere.steer_center(multiplier=1, base_dist=command.steer_dist)
 
 server_sub = rospy.Subscriber('server', String, callback=callback)
