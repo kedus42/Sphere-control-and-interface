@@ -96,10 +96,10 @@ class sphere:
         GPIO.output(PWM3, GPIO.LOW)
         self.mpos-=k
 
-    def steer_right(multiplier=1, base_dist=sdist):
+    def steer_right(self, multiplier=1, base_dist=sdist):
         self.right_turn(k=multiplier*(self.steer_pos-self.mpos), d=base_dist)
 
-    def steer_left(multiplier=1, base_dist=sdist):
+    def steer_left(self, multiplier=1, base_dist=sdist):
         self.left_turn(k=multiplier*abs(-1*self.steer_pos-self.mpos), d=base_dist)
 
     def adjust_tilt(self, target=0):
@@ -338,9 +338,9 @@ def gui_callback(message):
 
 def controllerCallback(command):
     if command.steer==-1:
-        Sphere.steer_left(1, command.steer_dist)
+        Sphere.steer_left(multiplier=1, base_dist=command.steer_dist)
     elif command.steer==1:
-        Sphere.steer_right(1, command.steer_dist)
+        Sphere.steer_right(multiplier=1, base_dist=command.steer_dist)
 
 server_sub = rospy.Subscriber('server', String, callback=callback)
 gui_sub = rospy.Subscriber('gui', String, gui_callback)
