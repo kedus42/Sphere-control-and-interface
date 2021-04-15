@@ -103,7 +103,7 @@ class sphere:
         self.left_turn(k=multiplier*abs(-1*self.steer_pos-self.mpos), d=base_dist)
     def steer_center(self, multiplier=1, base_dist=sdist):
         if self.mpos>0:
-            self.left_turn(k=multiplier*self.mpose, d=base_dist)
+            self.left_turn(k=multiplier*self.mpos, d=base_dist)
         elif self.mpos<0:
             self.right_turn(k=multiplier*abs(self.mpos), d=base_dist)
 
