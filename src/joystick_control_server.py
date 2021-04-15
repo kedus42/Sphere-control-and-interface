@@ -101,6 +101,11 @@ class sphere:
 
     def steer_left(self, multiplier=1, base_dist=sdist):
         self.left_turn(k=multiplier*abs(-1*self.steer_pos-self.mpos), d=base_dist)
+    def steer_center(self, multiplier=1, base_dist=sdist):
+        if self.mpos>0:
+            self.left_turn(k=multiplier*self.mpose, d=base_dist)
+        elif self.mpos<0:
+            self.right_turn(k=multiplier*abs(self.mpos), d=base_dist)
 
     def adjust_tilt(self, target=0):
         rospy.loginfo("Adjusting tilt...")
@@ -341,6 +346,8 @@ def controllerCallback(command):
         Sphere.steer_left(multiplier=1, base_dist=command.steer_dist)
     elif command.steer==1:
         Sphere.steer_right(multiplier=1, base_dist=command.steer_dist)
+    elif command.steer=0:
+        Sphere.steer_center(multiplier=1, base_dist=command.steer_dist)
 
 server_sub = rospy.Subscriber('server', String, callback=callback)
 gui_sub = rospy.Subscriber('gui', String, gui_callback)
