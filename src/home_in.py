@@ -21,7 +21,7 @@ steering_pub=rospy.Publisher('controller', drive_msg, queue_size=3)
 
 camera=picamera.PiCamera()
 rawCapture = PiRGBArray(camera)
-camera.resolution=(1280*720)
+camera.resolution=(1280,720)
 camera.vflip=True
 camera.hflip=True
 fps=2.0
