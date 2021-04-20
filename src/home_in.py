@@ -1,5 +1,5 @@
 #!/usr/bin/env python2.7
-import rospy, cv2
+import rospy, cv2, rospkg
 from std_msgs.msg import String
 #from cv_bridge import CvBridge
 import numpy as np
@@ -7,7 +7,9 @@ from sphere_control.msg import drive_msg
 import picamera
 from picamera.array import PiRGBArray
 
-noois=cv2.CascadeClassifier("/home/pi/ros_catkin_ws/src/sphere_control/haarcascades/haarcascade_lowerbody.xml")
+rospack=rospkg.RosPack()
+path=rospack.get_path('sphere_control')
+noois=cv2.CascadeClassifier(path+"/haarcascades/haarcascade_lowerbody.xml")
 
 rospy.init_node('home_in')
 camwidth=1920
