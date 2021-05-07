@@ -5,8 +5,8 @@ import rospy
 from std_msgs.msg import String
 from sphere_control.msg import drive_msg
 
-M12_CW=21
-M12_CCW=20
+M12_CW=5
+M12_CCW=6
 PWM12=12
 
 GPIO.setwarnings(False)
