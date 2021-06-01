@@ -32,8 +32,8 @@ greatestw=0
 def callback(image):
     global greatestw
     command=drive_msg()
-    camera.capture('/home/latest.jpg')
-    img = cv2.imread('/home/latest.jpg')
+    camera.capture('/home/pi/latest.jpg')
+    img = cv2.imread('/home/pi/latest.jpg')
     #camera.capture(rawCapture, format="bgr")
     #img = rawCapture.array
     oois=noois.detectMultiScale(img, 1.1, 0)
@@ -53,7 +53,7 @@ def callback(image):
                 else:
                     command.steer=0
     #cv2.imshow("sphere cam at "+ str(fps)+" fps", img)
-    cv2.imwrite("/home/detected imgs.jpg", img)
+    cv2.imwrite("/home/pi/detected imgs.jpg", img)
     steering_pub.publish(command)
 
 timer=rospy.Timer(rospy.Duration(1.0/fps), callback)
