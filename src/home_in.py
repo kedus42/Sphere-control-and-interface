@@ -52,7 +52,7 @@ def callback(image):
                     command.steer=1
                 else:
                     command.steer=0
-    cv2.imshow("sphere cam at "+ str(fps)+" fps", img)
+    #cv2.imshow("sphere cam at "+ str(fps)+" fps", img)
     cv2.imwrite("detected imgs.jpg", img)
     steering_pub.publish(command)
 
