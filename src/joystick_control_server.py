@@ -343,11 +343,11 @@ def gui_callback(message):
 
 def controllerCallback(command):
     if command.steer==-1:
-        Sphere.steer_left(multiplier=2, base_dist=command.steer_dist)
+        Sphere.steer_left(multiplier=1, base_dist=command.steer_dist)
     elif command.steer==1:
-        Sphere.steer_right(multiplier=2, base_dist=command.steer_dist)
+        Sphere.steer_right(multiplier=1, base_dist=command.steer_dist)
     elif command.steer==0:
-        Sphere.steer_center(multiplier=2, base_dist=command.steer_dist)
+        Sphere.steer_center(multiplier=1, base_dist=command.steer_dist)
 
 server_sub = rospy.Subscriber('server', String, callback=callback)
 gui_sub = rospy.Subscriber('gui', String, gui_callback)
